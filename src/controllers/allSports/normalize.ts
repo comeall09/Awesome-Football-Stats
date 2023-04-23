@@ -39,45 +39,18 @@ export class NormalizeAllSports {
     }
 }
 
-type TStatsDict = { [key: string]: string; };
-const statsDict: TStatsDict = {
-  "Shots Total": "Удары",
-  "On Target": "В створ ворот",
-  "Off Target": "Мимо ворот",
-  "Shots Blocked": "Заблокировано",
-  "Shots Inside Box": "Удары из вратарской",
-  "Shots Outside Box": "Удары из-за вратарской",
-  Fouls: "Фолы",
-  Corners: "Угловые",
-  Offsides: "Оффсайды",
-  "Ball Possession": "Владение мячом",
-  "Yellow Cards": "Количество ЖК",
-  "Red Cards": "Количество КК",
-  Saves: "Сейвы",
-  "Passes Total": "Пасы",
-  "Passes Accurate": "Точность пасов",
-  Substitution: "Замены",
-};
-
-type HTML = string;
-
 export class NormalizeUI {
-    static livescore(matches: NormalizedLivescore[]): HTML[][] {
-            const content = matches?.reduce((acc: string[][], curr, i) => {
-      const html = `
-<b>${curr?.home_team} ${curr?.final_result} ${curr?.away_team}</b>\n
-${curr?.home_formation} vs ${curr?.away_formation}
-Стадион: ${curr?.stadium}
-Судья: ${curr?.referee}\n
-${curr?.statistics
-  ?.map(
-    ({type, home, away}) => `${statsDict[type] ?? type}: ${home} - ${away}\n`
-  )
-  .join("")}
-`;
-            return [...acc, [html]];
-            }, []);
+    static livescore(matches: NormalizedLivescore[]): NormalizedLivescore[][] | null {
+        if (!matches.length) return null;
 
+            const content = matches?.reduce((acc: NormalizedLivescore[][], curr, i) => {
+                if (i % 2 === 0) {
+                    acc.push([curr]);
+                } else {
+                    acc[acc.length - 1].push(curr);
+                }
+                return acc;
+            }, []);
         return content;
     }
 }

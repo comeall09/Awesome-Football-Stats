@@ -1,12 +1,13 @@
 import { Context, Markup } from 'telegraf';
+import { allSportsActions } from './model/leagues';
 
 export class Bot {
-    static async init(ctx: Context) {
+    static async init(msg: string, ctx: Context) {
         try {
             await ctx.reply(
-                'Главное меню',
+                msg,
                 Markup.keyboard([
-                    ['💥Матчи в лайве💥'], // Row1 with 2 buttons
+                    [allSportsActions.TOP5_LIVE], // Row1 with 2 buttons
                     // ['button 3', 'button 4'], // Row2 with 2 buttons
                 ])
                     .oneTime()
