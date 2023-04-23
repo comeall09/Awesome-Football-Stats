@@ -3,6 +3,10 @@ export const allSportsMethods = {
     Livescore: 'Livescore',
 };
 
+export const allSportsActions = {
+    TOP5_LIVE: '💥Матчи в лайве💥',
+};
+
 export const leagues = [
     {
         name: 'England',

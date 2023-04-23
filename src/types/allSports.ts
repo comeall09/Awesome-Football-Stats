@@ -23,6 +23,7 @@ export interface Livescore {
 }
 
 export interface NormalizedLivescore {
+    key?: UniqueId,
     home_team?: string;
     final_result?: string;
     away_team?: string;
