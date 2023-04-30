@@ -1,4 +1,5 @@
-export type UniqueId = string;
-interface Dict {
-    [key: string]: string;
-}
+type HTML = string;
+type Markdown = string;
+
+type UniqueId = string;
+type URLString = string;
