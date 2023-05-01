@@ -67,17 +67,17 @@ export class TournamentsService {
 const getTeamMarkdown = (team: ITeamStats): Markdown => {
     const markdown = `📊 ${team.Squad}\n
 ${standingsDict['Matches Played']}: ${team['Matches Played']}
-${standingsDict.Points}: ${team.Points}
+${standingsDict.Points}: ${team.Points}\n
 ${standingsDict.Wins}: ${team.Wins}
 ${standingsDict.Losses}: ${team.Losses}
-${standingsDict.Draws}: ${team.Draws}
+${standingsDict.Draws}: ${team.Draws}\n
 ${standingsDict['Goals For']}: ${team['Goals For']}
 ${standingsDict['Goals Against']}: ${team['Goals Against']}
-${standingsDict['Goal Difference']}: ${team['Goal Difference']}
+${standingsDict['Goal Difference']}: ${team['Goal Difference']}\n
 ${standingsDict['xG']}: ${team.xG}
 ${standingsDict['xG Allowed']}: ${team['xG Allowed']}
 ${standingsDict['xG Difference']}: ${team['xG Difference']}
-${standingsDict['xG Difference/90']}: ${team['xG Difference/90']}
+${standingsDict['xG Difference/90']}: ${team['xG Difference/90']}\n
 ${standingsDict['Attendance/Game']}: ${team['Attendance/Game']}
 ${standingsDict['Top Team Scorer']}: ${team['Top Team Scorer']}`;
     return markdown;
