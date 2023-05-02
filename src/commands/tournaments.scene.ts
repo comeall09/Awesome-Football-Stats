@@ -5,8 +5,11 @@ import { TournamentsService } from '../services/tournaments.service';
 import { Scene } from './scene.class';
 import { InlineKeyboardButton } from 'telegraf/typings/core/types/typegram';
 
+const errorMsg = 'Что-то пошло не так... попробуйте позже';
 export class TournamentsScene extends Scene {
     private msgData = { messageId: 0, chatId: 0 };
+    // при клики на Другие лиги, сохраняем айдишки, чтоб потом удалить
+    private othersMsgData = { messageId: 0, chatId: 0 };
     private tournament: Tournaments;
 
     constructor() {
@@ -22,7 +25,7 @@ export class TournamentsScene extends Scene {
                 message_id,
                 chat: { id },
             } = await ctx.reply('Выберите интересующий турнир:', {
-                reply_markup: { inline_keyboard: keyboards },
+                reply_markup: { inline_keyboard: mainLeaguesKeyboard },
             });
             this.msgData.messageId = message_id;
             this.msgData.chatId = id;
@@ -34,6 +37,9 @@ export class TournamentsScene extends Scene {
             // сохраняем тип турнира при первом клике, больше не меняем
             this.tournament = tournament ?? this.tournament;
 
+            if (this.othersMsgData.messageId) {
+                await ctx.telegram.deleteMessage(this.othersMsgData.chatId, this.othersMsgData.messageId);
+            }
             const edited = await ctx.telegram.editMessageText(
                 this.msgData.chatId,
                 this.msgData.messageId,
@@ -65,7 +71,7 @@ export class TournamentsScene extends Scene {
                 }
             } catch (error) {
                 await ctx.telegram.editMessageText(this.msgData.chatId, this.msgData.messageId, '', {
-                    text: 'Что-то пошло не так... попробуйте позже',
+                    text: errorMsg,
                 });
             } finally {
                 ctx.answerCbQuery();
@@ -77,19 +83,30 @@ export class TournamentsScene extends Scene {
 
             if (tournamentsService.template.find(({ Rank }) => Rank === teamRank)) {
                 try {
-                    const teamTemplate = await tournamentsService.getTeamInfo(teamRank);
+                    const teamTemplate = tournamentsService.getTeamInfo(teamRank);
                     await ctx.reply(teamTemplate, {
                         parse_mode: 'Markdown',
                     });
                 } catch (error) {
-                    ctx.reply('Что-то пошло не так.. попробуйте позже');
+                    ctx.reply(errorMsg);
                 } finally {
                     ctx.answerCbQuery();
                 }
             } else {
-                ctx.reply('Что-то пошло не так.. попробуйте позже');
+                ctx.reply(errorMsg);
                 ctx.answerCbQuery();
             }
+        });
+
+        this.scene.action('OTHERS', async (ctx) => {
+            const {
+                message_id,
+                chat: { id },
+            } = await ctx.reply('Другие лиги:', {
+                reply_markup: { inline_keyboard: otherLeaguesKeyboard },
+            });
+            ctx.answerCbQuery();
+            this.othersMsgData = { messageId: message_id, chatId: id };
         });
     }
 
@@ -107,7 +124,7 @@ export class TournamentsScene extends Scene {
     isTeamsStep(val: string, ctx: IContextBot): RegExpExecArray | null {
         // TODO: проверяется делается на Не тип турнира
         // когда добавятся новые разделы, будут проблемы
-        if (!Object.values(Tournaments).includes(val as Tournaments)) {
+        if (!Object.values(Tournaments).includes(val as Tournaments) && val !== 'OTHERS') {
             if (ctx.callbackQuery && 'data' in ctx.callbackQuery) {
                 ctx.state.teamRank = ctx.callbackQuery.data;
             }
@@ -117,15 +134,44 @@ export class TournamentsScene extends Scene {
     }
 }
 
-const keyboards = [
-    // [{ text: LeaguesDict['UEFA Champions League'], callback_data: 'UCL' }],
+const mainLeaguesKeyboard = [
+    // [{ text: LeaguesDict['UEFA Champions League'], callback_data: Tournaments.UCL }],
+    [{ text: LeaguesDict['Premier League'], callback_data: Tournaments.EPL }],
     [
-        { text: '🏴󠁧󠁢󠁥󠁮󠁧󠁿 АПЛ', callback_data: Tournaments.EPL },
         { text: LeaguesDict['Primera Division'], callback_data: Tournaments.LALIGA },
+        { text: LeaguesDict.Bundesliga, callback_data: Tournaments.BUNDESLIGA },
     ],
     [
         { text: LeaguesDict['Serie A'], callback_data: Tournaments.SERIEA },
-        { text: LeaguesDict.Bundesliga, callback_data: Tournaments.BUNDESLIGA },
         { text: LeaguesDict['Ligue 1'], callback_data: Tournaments.LIGUE1 },
+    ],
+    [
+    ],
+    [
+        { text: 'Другие лиги', callback_data: 'OTHERS' },
+    ]
+];
+
+const otherLeaguesKeyboard = [
+    [
+        { text: LeaguesDict['Primeira Liga'], callback_data: Tournaments.PRIMEIRALIGA },
+        { text: LeaguesDict['Eredivisie'], callback_data: Tournaments.EREDIVISIE },
+
+    ],
+
+    [
+        { text: LeaguesDict['Ukrainian Premier League'], callback_data: Tournaments.UKRAINELIGA },
+        { text: LeaguesDict['Russian Premier League'], callback_data: Tournaments.RUSSIANLIGA },
+    ],
+
+    [
+        { text: LeaguesDict['Scottish Premier League'], callback_data: Tournaments.SCOTTISHLIGA },
+        { text: LeaguesDict['Belgian Pro League'], callback_data: Tournaments.BELGIANLIGA },
+    ],
+
+    [
+        { text: LeaguesDict['Turkish Süper Lig'], callback_data: Tournaments.TURKISHLIGA },
+        { text: LeaguesDict['Saudi Pro League'], callback_data: Tournaments.SAUDILIGA },
+
     ],
 ];
