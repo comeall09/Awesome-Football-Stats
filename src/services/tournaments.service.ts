@@ -16,7 +16,12 @@ export class TournamentsService {
         } = webData.ferbf;
         try {
             const { data }: { data: HTML } = await api.get(standings[tournament]);
-            this.normilizeResponse(data);
+
+            if (tournament === Tournaments.UCL) {
+                this.normalizeUCL(data);
+            } else {
+                this.normilizeResponse(data);
+            }
         } catch (error) {
             throw new Error('api error');
         }
@@ -24,8 +29,22 @@ export class TournamentsService {
         // temporary template
         // this.prepareTemplate();
     }
-    protected normilizeResponse(matches: HTML): void {
-        const $ = cheerio.load(matches);
+
+    protected normalizeUCL(page: HTML) {
+        const $ = cheerio.load(page);
+        const groups = $('#div_Group').eq(0);
+        console.dir(groups, { depth: null });
+        const headers = [];
+
+        // groups
+        // только при первой итерации по группам сохраняем заголовки таблиц
+        // if (i === 0) {
+        //     $(group).find('table thead tr');
+        // }
+    }
+
+    protected normilizeResponse(page: HTML): void {
+        const $ = cheerio.load(page);
         const table = $('table.stats_table').eq(0);
 
         const headers: Array<keyof ITeamStats> = [];
@@ -35,9 +54,12 @@ export class TournamentsService {
 
         const cells: string[] = [];
         table.find('tbody tr').each((_, tr) => {
-            tr.children.map((el) => {
-                cells.push($(el).text());
-            });
+            // строки таблиц с классом spacer пропускаем, тк это разделитель строк
+            if (!$(tr).hasClass('spacer')) {
+                tr.children.map((el) => {
+                    cells.push($(el).text());
+                });
+            }
         });
 
         const result: IStandings = [];
@@ -65,22 +87,29 @@ export class TournamentsService {
 }
 
 const getTeamMarkdown = (team: ITeamStats): Markdown => {
-    const markdown = `📊 ${team.Squad}\n
-${standingsDict['Matches Played']}: ${team['Matches Played']}
-${standingsDict.Points}: ${team.Points}\n
-${standingsDict.Wins}: ${team.Wins}
-${standingsDict.Losses}: ${team.Losses}
-${standingsDict.Draws}: ${team.Draws}\n
-${standingsDict['Goals For']}: ${team['Goals For']}
-${standingsDict['Goals Against']}: ${team['Goals Against']}
-${standingsDict['Goal Difference']}: ${team['Goal Difference']}\n
-${standingsDict['xG']}: ${team.xG}
-${standingsDict['xG Allowed']}: ${team['xG Allowed']}
-${standingsDict['xG Difference']}: ${team['xG Difference']}
-${standingsDict['xG Difference/90']}: ${team['xG Difference/90']}\n
-${standingsDict['Attendance/Game']}: ${team['Attendance/Game']}
-${standingsDict['Top Team Scorer']}: ${team['Top Team Scorer']}`;
-    return markdown;
+    let markdown = `📊 ${team.Squad}\n\n`;
+
+    markdown += `${standingsDict['Matches Played']}: ${team['Matches Played']}\n`;
+    markdown += `${standingsDict.Points}: ${team.Points}\n\n`;
+
+    markdown += `${standingsDict.Wins}: ${team.Wins}\n`;
+    markdown += `${standingsDict.Losses}: ${team.Losses}\n`;
+    markdown += `${standingsDict.Draws}: ${team.Draws}\n\n`;
+
+    markdown += `${standingsDict['Goals For']}: ${team['Goals For']}\n`;
+    markdown += `${standingsDict['Goals Against']}: ${team['Goals Against']}\n`;
+    markdown += `${standingsDict['Goal Difference']}: ${team['Goal Difference']}\n\n`;
+
+    if (team.xG && team['xG Allowed'] && team['xG Difference'] && team['xG Difference/90']) {
+        markdown += `${standingsDict.xG}: ${team.xG}\n`;
+        markdown += `${standingsDict['xG Allowed']}: ${team['xG Allowed']}\n`;
+        markdown += `${standingsDict['xG Difference']}: ${team['xG Difference']}\n`;
+        markdown += `${standingsDict['xG Difference/90']}: ${team['xG Difference/90']}\n\n`;
+    }
+    markdown += `${standingsDict['Attendance/Game']}: ${team['Attendance/Game']}\n`;
+    markdown += `${standingsDict['Top Team Scorer']}: ${team['Top Team Scorer']}\n`;
+
+    return markdown.trim();
 };
 
 type IStandings = ITeamStats[];
@@ -96,10 +125,10 @@ interface ITeamStats {
     'Goal Difference': string,
     Points: string,
     'Points/Game': string,
-    xG: string,
-    'xG Allowed': string,
-    'xG Difference': string,
-    'xG Difference/90': string,
+    xG?: string,
+    'xG Allowed'?: string,
+    'xG Difference'?: string,
+    'xG Difference/90'?: string,
     'Last 5': string,
     'Attendance/Game': string,
     'Top Team Scorer': string,

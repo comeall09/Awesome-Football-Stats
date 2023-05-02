@@ -1,10 +1,19 @@
 export const LeaguesDict = {
     'UEFA Champions League': '🇪🇺 Лига Чемпионов УЕФА 🔥',
     Bundesliga: '🇩🇪 Бундеслига',
-    'Premier League': '🏴󠁧󠁢󠁥󠁮󠁧󠁿 Английская Премьер Лига',
+    'Premier League': '🏴󠁧󠁢󠁥󠁮󠁧󠁿 Английская Премьер-Лига',
     'Primera Division': '🇪🇸 Ла Лига',
     'Serie A': '🇮🇹 Сериа А',
     'Ligue 1': '🇫🇷 Лига 1',
+    'Primeira Liga': '🇵🇹 Примейра Лига',
+
+    'Ukrainian Premier League': '🇺🇦 УПЛ',
+    'Turkish Süper Lig': '🇹🇷 Тур. Суперлига',
+    'Russian Premier League': '🇷🇺 РПЛ',
+    Eredivisie: '🇳🇱 Эредивизи',
+    'Belgian Pro League': '🇧🇪 Бел. Про-лига',
+    'Scottish Premier League': '🏴󠁧󠁢󠁳󠁣󠁴󠁿 Шотл. Премьер-Лига',
+    'Saudi Pro League': '🇸🇦 Сауд. Про-Лига',
 };
 
 export const standingsDict = {
