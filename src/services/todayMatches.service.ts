@@ -90,9 +90,9 @@ export class TodayMatches extends Matches {
             markdown += '\n';
         }
         markdown += 'Статус матчей:\n';
-        markdown += '⚫️ - завершён\n';
-        markdown += '🟢 - идёт\n';
-        markdown += '🟣 - ещё не начался\n';
+        markdown += '⚫️ Завершён\n';
+        markdown += '🟢 Идёт\n';
+        markdown += '🟣 Ещё не начался\n';
 
         this.template = markdown;
     }
