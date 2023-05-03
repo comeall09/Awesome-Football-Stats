@@ -4,7 +4,7 @@ interface IScene {
 }
 
 export const scenesUtils: IScene[] = [
-    { name: 'todayMatchesScene', action: 'Сегодняшние матчи ⚽️' },
+    { name: 'todayMatchesScene', action: 'Матчи дня ⚽️' },
     // { name: 'liveMatchesScene', action: 'Матчи в Live 💥' },
     { name: 'tournamentsScene', action: 'Турниры 🏆' },
     // { name: 'teamsScene', action: 'Команды 🥇' },
