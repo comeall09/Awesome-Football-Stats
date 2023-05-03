@@ -39,6 +39,8 @@ export class TournamentsScene extends Scene {
 
             if (this.othersMsgData.messageId) {
                 await ctx.telegram.deleteMessage(this.othersMsgData.chatId, this.othersMsgData.messageId);
+                this.othersMsgData.chatId = 0;
+                this.othersMsgData.messageId = 0;
             }
             const edited = await ctx.telegram.editMessageText(
                 this.msgData.chatId,
@@ -62,7 +64,7 @@ export class TournamentsScene extends Scene {
 
                     await ctx.telegram.editMessageReplyMarkup(this.msgData.chatId, this.msgData.messageId, '', {
                         inline_keyboard: template.reduce((btns: InlineKeyboardButton[][], { Rank, Squad }, i) => {
-                            const button = [{ text: `${Rank}: ${Squad}`, callback_data: `${Rank}` }];
+                            const button = [{ text: `${Rank}. ${Squad}`, callback_data: `${Rank}` }];
                             return [...btns, button];
                         }, []),
                     });

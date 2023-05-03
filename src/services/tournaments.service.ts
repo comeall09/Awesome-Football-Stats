@@ -57,7 +57,33 @@ export class TournamentsService {
             // строки таблиц с классом spacer пропускаем, тк это разделитель строк
             if (!$(tr).hasClass('spacer')) {
                 tr.children.map((el) => {
-                    cells.push($(el).text());
+                    // qualification indicator
+                    // UCL
+                    const text = $(el).text();
+                    const { ucl, uel, uecl, relagate } = indicators;
+                    if ($(el).hasClass('qualifier1')) {
+                        cells.push(`${ucl} ${text}`);
+                        return;
+                    }
+
+                    // UEL
+                    if ($(el).hasClass('qualifier2')) {
+                        cells.push(`${uel} ${text}`);
+                        return;
+                    }
+
+                    // UECL
+                    if ($(el).hasClass('qualifier3')) {
+                        cells.push(`${uecl} ${text}`);
+                        return;
+                    }
+
+                    // relagate indicator
+                    if ($(el).hasClass('relegate')) {
+                        cells.push(`${relagate} ${text}`);
+                        return;
+                    }
+                    cells.push(text);
                 });
             }
         });
@@ -135,6 +161,8 @@ interface ITeamStats {
     Goalkeeper: string,
     Notes: string
 }
+
+const indicators = { ucl: '🔵', uel: '🟠', uecl: '🟢', relagate: '🔻' };
 
 // const temporaryData = [
 //     {
