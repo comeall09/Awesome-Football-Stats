@@ -12,7 +12,7 @@ export class UclService {
         const url =  webData.ferbf.queries.playersStats(Tournaments.UCL);
         if(!this.statsContent) {
             try {
-                const browser = await puppeteer.launch();
+                const browser = await puppeteer.launch({headless: 'new'});
                 const page = await browser.newPage();
                 await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 10_000 });
                 await page.waitForSelector('#div_leaders');

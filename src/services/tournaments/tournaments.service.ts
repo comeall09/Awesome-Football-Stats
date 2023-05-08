@@ -32,7 +32,7 @@ export class TournamentsService {
         if(!this.playersContent) {
             const { queries: { playersStats } } = webData.ferbf;
             try {
-                const browser = await puppeteer.launch();
+                const browser = await puppeteer.launch({ headless: 'new' });
                 const page = await browser.newPage();
                 const url = playersStats(tournament);
 
