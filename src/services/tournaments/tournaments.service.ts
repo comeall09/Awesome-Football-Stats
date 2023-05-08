@@ -20,12 +20,7 @@ export class TournamentsService {
         } = webData.ferbf;
         try {
             const { data }: { data: HTML } = await api.get(standings[tournament]);
-
-            if (tournament === Tournaments.UCL) {
-                this.normalizeUCL(data);
-            } else {
-                this.normilizeTeamsResponse(data);
-            }
+            this.normilizeTeamsResponse(data);
         } catch (error) {
             throw new Error('api error');
         }
@@ -41,7 +36,7 @@ export class TournamentsService {
                 const page = await browser.newPage();
                 const url = playersStats(tournament);
 
-                await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 14_000 });
+                await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 10_000 });
                 await page.waitForSelector('#div_stats_standard');
                 const content = await page.content();
                 browser.close();
@@ -53,19 +48,6 @@ export class TournamentsService {
         }
         const team = this.standings.find(({Rank}) => Rank === teamRank);
         this.normalizePlayersResponse({ team: team! });
-    }
-
-    protected normalizeUCL(page: HTML) {
-        const $ = cheerio.load(page);
-        const groups = $('#div_Group').eq(0);
-        console.dir(groups, { depth: null });
-        const headers = [];
-
-        // groups
-        // только при первой итерации по группам сохраняем заголовки таблиц
-        // if (i === 0) {
-        //     $(group).find('table thead tr');
-        // }
     }
 
     protected normilizeTeamsResponse(page: HTML): void {

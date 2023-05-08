@@ -8,4 +8,6 @@ export abstract class Scene {
     }
 
     abstract open(): void;
+    abstract actions(): void;
+    abstract checkers?: Record<string, (val: string, ctx: IContextBot) => RegExpExecArray | null>;
 }

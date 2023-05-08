@@ -6,8 +6,8 @@ import { IConfigService } from './config/config.interface';
 import { Command } from './commands/command.class';
 
 // scenes
-import { scenesUtils } from './utils/scenes.helpers';
-import { TodayMatchesScene, LiveMatchesScene, StartCommand, TournamentsScene } from './commands/index';
+import { scenesUtils, permissions } from './utils/scenes.helpers';
+import { TodayMatchesScene, StartCommand, TournamentsScene, UclScene } from './commands/index';
 
 export class Bot {
     bot: Telegraf<IContextBot>;
@@ -22,15 +22,30 @@ export class Bot {
 
     init() {
         // init scenes
-        const liveMatchesScene = new LiveMatchesScene();
         const todayMatchesScene = new TodayMatchesScene();
         const tournamentsScene = new TournamentsScene();
+        const uclScene = new UclScene();
         const stage = new Scenes.Stage<IContextBot>([
-            liveMatchesScene.scene,
             todayMatchesScene.scene,
             tournamentsScene.scene,
+            uclScene.scene,
         ]);
+        this.bot.catch((err, ctx) => {
+            ctx.reply("Что-то пошло не так... попробуйте позже");
+        });
         this.bot.use(stage.middleware());
+
+        this.bot.use(async (ctx, next)=> {
+            if("message" in ctx.update) {
+                const userId = ctx.update.message.from.id;
+                const hasPermission = permissions.find(({id}) => id === userId);
+                if(!hasPermission) {
+                    await ctx.reply('Для получения доступа, напиши автору бота: @chupapee');
+                    return;
+                }
+                return next();
+            }
+        });
 
         this.commands = [new StartCommand(this.bot)];
         for (const command of this.commands) {

@@ -8,7 +8,7 @@ const WEBDATA_BASE_URL = new ConfigService().get('WEBDATA_BASE_URL');
 
 // ferbf api
 const playersStats = {
-    UCL: '8/stats/Champions-League-Stats',
+    UCL: '8/Champions-League-Stats',
     EPL: '9/stats/Premier-League-Stats',
     LALIGA: '12/stats/La-Liga-Stats',
     SERIEA: '11/stats/Serie-A-Stats',

@@ -9,7 +9,6 @@ export class TodayMatchesScene extends Scene {
 
     open(): void {
         this.scene.enter(async (ctx) => {
-            console.log(ctx);
             const todayMatches = new TodayMatches();
             const {
                 chat: { id: chatId },
@@ -28,5 +27,13 @@ export class TodayMatchesScene extends Scene {
                 ctx.telegram.editMessageText(chatId, message_id, '', 'На сегодня матчей нет.');
             }
         });
+
+        this.actions();
     }
+
+    actions(): void {
+        //
+    }
+
+    checkers: undefined;
 }

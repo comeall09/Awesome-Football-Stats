@@ -5,9 +5,8 @@ import { Scene } from '../scene.class';
 import { Tournaments } from '../../entities/tournaments.interface';
 import { TournamentsService } from '../../services/tournaments/tournaments.service';
 import { allLeaguesKeyboard, mainLeaguesKeyboard } from './keyboards';
+import { errorMsg, timeoutMsg } from '../helpers';
 
-const errorMsg = 'Что-то пошло не так... попробуйте позже';
-const timeoutMsg = 'Это займёт не больше 15 секунд';
 export class TournamentsScene extends Scene {
     // при клике на Другие лиги, сохраняем айдишки, чтоб потом удалить
     private tournament: Tournaments;
@@ -104,14 +103,15 @@ export class TournamentsScene extends Scene {
                 await tournamentsService.fetchPlayersStats(this.tournament, teamRank);
             } catch (error) {
                 await ctx.answerCbQuery();
+                await ctx.deleteMessage(msgId);
                 await ctx.editMessageText(errorMsg);
                 return;
             }
 
             const playersButtons = tournamentsService.playersButtons;
+            await ctx.deleteMessage(msgId);
             if(playersButtons && playersButtons.length) {
                 try {
-                    await ctx.deleteMessage(msgId);
                     await ctx.reply(
                         'Выберите интересующего игрока:',
                         {

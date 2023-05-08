@@ -4,8 +4,10 @@ export const indicators = { ucl: '🔵', uel: '🟠', uecl: '🟢', relagate: '�
 // es => 🇪🇸
 // TODO: некоторые флаги отображаются некорректно
 export const convertFlag = (nation: string) => {
-    const flag = nation.split(' ')[0];
-    return String.fromCodePoint(...[...flag.toUpperCase()].map(char => char.charCodeAt(0) + 127397));
+    const flag = nation.toUpperCase().split(' ')[0].trim();
+    if(flag === 'ENG') return '🏴󠁧󠁢󠁥󠁮󠁧󠁿';
+    const flagChars = String.fromCodePoint(...[...flag].map(char => char.charCodeAt(0) + 127397)).trim().split('');
+    return flagChars.length > 4 ? '' : flagChars.join('');
 };
 
 const convertPosition = (positions: string) => {

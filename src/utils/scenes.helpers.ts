@@ -3,10 +3,16 @@ interface IScene {
     action: string;
 }
 
+export const permissions = [
+    {user: 'lust', id: 1333220153},
+    {user: 'Khamidov', id: 5174774728},
+];
+
 export const scenesUtils: IScene[] = [
+    { name: 'uclScene', action: '🇪🇺 Лига Чемпионов УЕФА 🔥' },
+    { name: 'tournamentsScene', action: 'Чемпионаты 🏆' },
     { name: 'todayMatchesScene', action: 'Матчи дня ⚽️' },
     // { name: 'liveMatchesScene', action: 'Матчи в Live 💥' },
-    { name: 'tournamentsScene', action: 'Турниры 🏆' },
     // { name: 'teamsScene', action: 'Команды 🥇' },
     // { name: 'playersScene', action: 'Игроки 👤' },
 ];
