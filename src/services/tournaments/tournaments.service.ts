@@ -41,7 +41,7 @@ export class TournamentsService {
                 const page = await browser.newPage();
                 const url = playersStats(tournament);
 
-                await page.goto(url, { waitUntil: 'domcontentloaded' });
+                await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 14_000 });
                 await page.waitForSelector('#div_stats_standard');
                 const content = await page.content();
                 browser.close();

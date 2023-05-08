@@ -8,21 +8,21 @@ const WEBDATA_BASE_URL = new ConfigService().get('WEBDATA_BASE_URL');
 
 // ferbf api
 const playersStats = {
-    UCL: '8',
-    EPL: '9/stats/Premier-League-Stats#all_stats_standard',
-    LALIGA: '12/stats/La-Liga-Stats#all_stats_standard',
-    SERIEA: '11/stats/Serie-A-Stats#all_stats_standard',
-    BUNDESLIGA: '20/stats/Bundesliga-Stats#all_stats_standard',
-    LIGUE1: '13/stats/Ligue-1-Stats#all_stats_standard',
-    PRIMEIRALIGA: '32/stats/Primeira-Liga-Stats#all_stats_standard',
+    UCL: '8/stats/Champions-League-Stats',
+    EPL: '9/stats/Premier-League-Stats',
+    LALIGA: '12/stats/La-Liga-Stats',
+    SERIEA: '11/stats/Serie-A-Stats',
+    BUNDESLIGA: '20/stats/Bundesliga-Stats',
+    LIGUE1: '13/stats/Ligue-1-Stats',
+    PRIMEIRALIGA: '32/stats/Primeira-Liga-Stats',
 
-    UKRAINELIGA: '39/stats/Ukrainian-Premier-League-Stats#all_stats_standard',
-    RUSSIANLIGA: '30',
-    EREDIVISIE: '23/stats/Eredivisie-Stats#all_stats_standard',
-    BELGIANLIGA: '37',
-    SCOTTISHLIGA: '40',
-    TURKISHLIGA: '26',
-    SAUDILIGA: '70',
+    UKRAINELIGA: '39/stats/Ukrainian-Premier-League-Stats',
+    RUSSIANLIGA: '30/stats/Russian-Premier-League-Stats',
+    EREDIVISIE: '23/stats/Eredivisie-Stats',
+    BELGIANLIGA: '37/stats/Belgian-First-Division-A-Stats',
+    SCOTTISHLIGA: '40/stats/Scottish-Premiership-Stats',
+    TURKISHLIGA: '26/stats/Super-Lig-Stats',
+    SAUDILIGA: '70/stats/Saudi-Professional-League-Stats',
 };
 // ferbf api
 enum standings {

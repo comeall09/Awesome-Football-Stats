@@ -14,12 +14,13 @@ export const mainLeaguesKeyboard = [
     ],
     [
     ],
-    // [
-    //     { text: 'Другие лиги', callback_data: 'other-tournaments' },
-    // ]
+    [
+        { text: 'Другие лиги', callback_data: 'other-tournaments' },
+    ]
 ];
 
-export const otherLeaguesKeyboard = [
+export const allLeaguesKeyboard = [
+    ...mainLeaguesKeyboard.slice(0, -1), // все кроме кнопки Другие лиги
     [
         { text: LeaguesDict['Primeira Liga'], callback_data: Tournaments.PRIMEIRALIGA },
         { text: LeaguesDict['Eredivisie'], callback_data: Tournaments.EREDIVISIE },

@@ -4,14 +4,12 @@ import { IContextBot } from '../../context/context.interface';
 import { Scene } from '../scene.class';
 import { Tournaments } from '../../entities/tournaments.interface';
 import { TournamentsService } from '../../services/tournaments/tournaments.service';
-import { mainLeaguesKeyboard, otherLeaguesKeyboard } from './keyboards';
+import { allLeaguesKeyboard, mainLeaguesKeyboard } from './keyboards';
 
 const errorMsg = 'Что-то пошло не так... попробуйте позже';
-
+const timeoutMsg = 'Это займёт не больше 15 секунд';
 export class TournamentsScene extends Scene {
-    private msgData = { messageId: 0, chatId: 0 };
     // при клике на Другие лиги, сохраняем айдишки, чтоб потом удалить
-    private othersMsgData = { messageId: 0, chatId: 0 };
     private tournament: Tournaments;
 
     constructor() {
@@ -21,17 +19,10 @@ export class TournamentsScene extends Scene {
 
     open(): void {
         this.scene.enter(async (ctx) => {
-            const {
-                message_id,
-                chat: { id },
-            } = await ctx.reply('Выберите интересующий турнир:', {
+            await ctx.reply('Выберите интересующий турнир:', {
                 reply_markup: { inline_keyboard: mainLeaguesKeyboard },
             });
-            this.msgData.messageId = message_id;
-            this.msgData.chatId = id;
-
         });
-
 
         this.actions();
     }
@@ -40,57 +31,38 @@ export class TournamentsScene extends Scene {
         const tournamentsService = new TournamentsService();
 
         this.scene.action(this.checkers.isTournamentsAction, async (ctx) => {
-            const tournament = (await ctx.state.data) as Tournaments;
+            const { tournament } = ctx.state as { tournament: Tournaments};
             // сохраняем тип турнира при первом выборе, дальше не меняем
-            this.tournament = tournament ?? this.tournament;
-
-            if (this.othersMsgData.messageId) {
-                await ctx.telegram.deleteMessage(this.othersMsgData.chatId, this.othersMsgData.messageId);
-                this.othersMsgData.chatId = 0;
-                this.othersMsgData.messageId = 0;
-            }
-
-            const edited = await ctx.telegram.editMessageText(
-                this.msgData.chatId,
-                this.msgData.messageId,
-                '',
-                'Подготавливаем данные...'
-            );
-
-            if (edited !== true && ('message_id' && 'chat') in edited) {
-                this.msgData.messageId = edited.message_id;
-                this.msgData.chatId = edited.chat.id;
-            }
+            this.tournament = tournament;
 
             try {
-                await ctx.answerCbQuery('Это займёт не больше 10 секунд');
+                await ctx.answerCbQuery(timeoutMsg);
+                await ctx.editMessageText('Подготавливаем данные...');
                 await tournamentsService.fetchTeamsStats(this.tournament);
                 const teamsBtns = tournamentsService.teamsButtons;
                 if (teamsBtns) {
-                    await ctx.telegram.editMessageText(this.msgData.chatId, this.msgData.messageId, '', {
-                        text: 'Турнирная таблица:\nВыберите клуб для получения подробной статистики',
-                    });
-
-                    await ctx.telegram.editMessageReplyMarkup(this.msgData.chatId, this.msgData.messageId, '', {
-                        inline_keyboard: teamsBtns.reduce((btns: InlineKeyboardButton[][], { Rank, Squad }) => {
-                            const button = [{ text: `${Rank}. ${Squad}`, callback_data: `team-${Rank}` }];
-                            return [...btns, button];
-                        }, []),
-                    });
+                    await ctx.editMessageText(
+                        'Турнирная таблица:\nВыберите клуб для получения подробной статистики',
+                        { parse_mode: 'Markdown',
+                            reply_markup: {
+                                inline_keyboard: teamsBtns.reduce((btns: InlineKeyboardButton[][], { Rank, Squad }) => {
+                                    const button = [{ text: `${Rank}. ${Squad}`, callback_data: `team-${Rank}` }];
+                                    return [...btns, button];
+                                }, []),
+                             }
+                        });
                 } else {
                     throw new Error('template not found');
                 }
             } catch (error) {
-                await ctx.telegram.editMessageText(this.msgData.chatId, this.msgData.messageId, '', {
-                    text: errorMsg,
-                });
+                await ctx.editMessageText(errorMsg);
             } finally {
                 await ctx.answerCbQuery();
             }
         });
 
         this.scene.action(this.checkers.isTeamAction, async (ctx) => {
-            const teamRank = ctx.state.data;
+            const teamRank = await ctx.state.data;
 
             if (tournamentsService.teamsButtons.find(({ Rank }) => Rank === teamRank)) {
                 try {
@@ -104,7 +76,7 @@ export class TournamentsScene extends Scene {
                         }
                     });
                 } catch (error) {
-                    ctx.reply(errorMsg);
+                    await ctx.reply(errorMsg);
                 } finally {
                     await ctx.answerCbQuery();
                 }
@@ -115,53 +87,44 @@ export class TournamentsScene extends Scene {
         });
 
         this.scene.action('other-tournaments', async (ctx) => {
-            const {
-                message_id,
-                chat: { id },
-            } = await ctx.reply('Другие лиги:', {
-                reply_markup: { inline_keyboard: otherLeaguesKeyboard },
+            await ctx.editMessageText('Выберите интересующий турнир:', {
+                reply_markup: { inline_keyboard: allLeaguesKeyboard },
             });
             await ctx.answerCbQuery();
-            this.othersMsgData = { messageId: message_id, chatId: id };
         });
 
         this.scene.action(this.checkers.isPlayersStatsAction, async (ctx) => {
-            const teamRank: string = ctx.state.data;
-            const tournament = this.tournament;
-
-            let messageId = null;
-            let chatId = null;
+            const teamRank: string = await ctx.state.teamRank;
+            let msgId;
 
             try {
-                await ctx.answerCbQuery('Это займёт не больше 20 секунд', { cache_time: 20_000 });
-                const { message_id, chat: { id } } = await ctx.reply('Подготовавливаем данные игроков...');
-                messageId = message_id;
-                chatId = id;
-                await tournamentsService.fetchPlayersStats(tournament, teamRank);
+                await ctx.answerCbQuery(timeoutMsg);
+                const { message_id } = await ctx.reply('Подготовавливаем данные игроков...');
+                msgId = message_id;
+                await tournamentsService.fetchPlayersStats(this.tournament, teamRank);
             } catch (error) {
-                await ctx.telegram.editMessageText(chatId!, messageId!, '', errorMsg);
                 await ctx.answerCbQuery();
+                await ctx.editMessageText(errorMsg);
                 return;
             }
-            const playersButtons = tournamentsService.playersButtons;
 
+            const playersButtons = tournamentsService.playersButtons;
             if(playersButtons && playersButtons.length) {
                 try {
-                    await ctx.telegram.editMessageText(
-                        chatId, messageId, '',
-                        { text: 'Выберите интересующего игрока:' },
+                    await ctx.deleteMessage(msgId);
+                    await ctx.reply(
+                        'Выберите интересующего игрока:',
                         {
                             reply_markup: {
                                 inline_keyboard: playersButtons.map(({ Nation, Player }) => ([{text: `${Nation} ${Player}`, callback_data: `player-info-${Player}`}]))
                             }
                         }
                     );
-
                 } catch (error) {
-                    await ctx.telegram.editMessageText(chatId, messageId, '', errorMsg);
+                    await ctx.editMessageText(errorMsg);
                 }
             } else {
-                await ctx.telegram.editMessageText(chatId, messageId, '', errorMsg);
+                await ctx.editMessageText(errorMsg);
             }
             await ctx.answerCbQuery();
         });
@@ -179,7 +142,7 @@ export class TournamentsScene extends Scene {
         isTournamentsAction(val: string, ctx: IContextBot): RegExpExecArray | null {
             // при первом клике сохраняем выбранный турнир
             if (Object.values(Tournaments).includes(val as Tournaments)) {
-                ctx.state.data = val;
+                ctx.state.tournament = val;
                 return {} as RegExpExecArray;
             } else if (val === 'backToTeams') {
                 return {} as RegExpExecArray;
@@ -200,7 +163,7 @@ export class TournamentsScene extends Scene {
         isPlayersStatsAction(val: string, ctx: IContextBot): RegExpExecArray | null {
             if(val.startsWith('playersStats')) {
                 if (ctx.callbackQuery && 'data' in ctx.callbackQuery) {
-                    ctx.state.data = ctx.callbackQuery.data.slice(13); // slice "playersStats-"
+                    ctx.state.teamRank = ctx.callbackQuery.data.slice(13); // slice "playersStats-"
                 }
                 return {} as RegExpExecArray;
             }
@@ -217,5 +180,4 @@ export class TournamentsScene extends Scene {
             return null;
         }
     };
-
 }

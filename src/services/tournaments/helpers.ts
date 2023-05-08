@@ -67,27 +67,27 @@ export const playerTemplate = (player: IPlayerStats) => {
     markdown += `${playerDict['Penalty Kicks Made']}: ${player['Penalty Kicks Made']}\n`;
     markdown += `${playerDict['Penalty Kicks Attempted']}: ${player['Penalty Kicks Attempted']}\n\n`;
 
-    markdown += `${playerDict.xG}: ${player.xG}\n`;
-    markdown += `${playerDict['Non-Penalty xG']}: ${player['Non-Penalty xG']}\n`;
-    markdown += `${playerDict['xAG']}: ${player['xAG']}\n`;
-    markdown += `${playerDict['npxG + xAG']}: ${player['npxG + xAG']}\n\n`;
+    if(player.xG) markdown += `${playerDict.xG}: ${player.xG}\n`;
+    if(player['Non-Penalty xG']) markdown += `${playerDict['Non-Penalty xG']}: ${player['Non-Penalty xG']}\n`;
+    if(player.xAG) markdown += `${playerDict['xAG']}: ${player.xAG}\n`;
+    if(player['npxG + xAG']) markdown += `${playerDict['npxG + xAG']}: ${player['npxG + xAG']}\n\n`;
 
-    markdown += `${playerDict['Progressive Carries']}: ${player['Progressive Carries']}\n`;
-    markdown += `${playerDict['Progressive Passes']}: ${player['Progressive Passes']}\n`;
-    markdown += `${playerDict['Progressive Passes Rec']}: ${player['Progressive Passes Rec']}\n\n`;
+    if(player['Progressive Carries']) markdown += `${playerDict['Progressive Carries']}: ${player['Progressive Carries']}\n`;
+    if(player['Progressive Passes']) markdown += `${playerDict['Progressive Passes']}: ${player['Progressive Passes']}\n`;
+    if(player['Progressive Passes Rec']) markdown += `${playerDict['Progressive Passes Rec']}: ${player['Progressive Passes Rec']}\n\n`;
 
     markdown += `📊 Статистика на каждые 90 минут:\n\n`;
 
-    markdown += `${playerDict['Goals']}: ${player['Goals/90']}\n`;
-    markdown += `${playerDict['Assists']}: ${player['Assists/90']}\n`;
-    markdown += `${playerDict['Goals + Assists']}: ${player['Goals + Assists/90']}\n`;
-    markdown += `${playerDict['Non-Penalty Goals']}: ${player['Non-Penalty Goals/90']}\n`;
-    markdown += `${playerDict['Non-Penalty Goals + Assists/90']}: ${player['Non-Penalty Goals + Assists/90']}\n`;
+    if(player['Goals/90']) markdown += `${playerDict['Goals']}: ${player['Goals/90']}\n`;
+    if(player['Assists/90']) markdown += `${playerDict['Assists']}: ${player['Assists/90']}\n`;
+    if(player['Goals + Assists/90']) markdown += `${playerDict['Goals + Assists']}: ${player['Goals + Assists/90']}\n`;
+    if(player['Non-Penalty Goals/90']) markdown += `${playerDict['Non-Penalty Goals']}: ${player['Non-Penalty Goals/90']}\n`;
+    if(player['Non-Penalty Goals + Assists/90']) markdown += `${playerDict['Non-Penalty Goals + Assists/90']}: ${player['Non-Penalty Goals + Assists/90']}\n`;
 
-    markdown += `${playerDict['xG']}: ${player['xG/90']}\n`;
-    markdown += `${playerDict['xAG']}: ${player['xAG/90']}\n`;
-    markdown += `${playerDict['xG + xAG/90']}: ${player['xG + xAG/90']}\n`;
-    markdown += `${playerDict['Non-Penalty xG']}: ${player['npxG/90']}\n`;
+    if(player['xG/90']) markdown += `${playerDict['xG']}: ${player['xG/90']}\n`;
+    if(player['xAG/90']) markdown += `${playerDict['xAG']}: ${player['xAG/90']}\n`;
+    if(player['xG + xAG/90']) markdown += `${playerDict['xG + xAG/90']}: ${player['xG + xAG/90']}\n`;
+    if(player['npxG/90']) markdown += `${playerDict['Non-Penalty xG']}: ${player['npxG/90']}\n`;
 
     return markdown;
 };
