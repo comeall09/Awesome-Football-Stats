@@ -65,11 +65,11 @@ export const playerTemplate = (player: IPlayerStats) => {
     markdown += `${playerDict['Non-Penalty Goals']}: ${player['Non-Penalty Goals']}\n\n`;
 
     markdown += `${playerDict['Penalty Kicks Made']}: ${player['Penalty Kicks Made']}\n`;
-    markdown += `${playerDict['Penalty Kicks Attempted']}: ${player['Penalty Kicks Attempted']}\n`;
+    markdown += `${playerDict['Penalty Kicks Attempted']}: ${player['Penalty Kicks Attempted']}\n\n`;
 
     markdown += `${playerDict.xG}: ${player.xG}\n`;
     markdown += `${playerDict['Non-Penalty xG']}: ${player['Non-Penalty xG']}\n`;
-    markdown += `${playerDict['xAG']}: ${player['xaG']}\n`;
+    markdown += `${playerDict['xAG']}: ${player['xAG']}\n`;
     markdown += `${playerDict['npxG + xAG']}: ${player['npxG + xAG']}\n\n`;
 
     markdown += `${playerDict['Progressive Carries']}: ${player['Progressive Carries']}\n`;
@@ -142,7 +142,7 @@ export interface IPlayerStats {
 
     xG: string;
     "Non-Penalty xG": string; // Non-Penalty xG
-    xaG: string; // Expected Assisted goals ожидаемые ассисты
+    xAG: string; // Expected Assisted goals ожидаемые ассисты
     "npxG + xAG": string;
 
     'Progressive Carries': string; // Progressive Carries продвижение мяча в сторону ворот соперника

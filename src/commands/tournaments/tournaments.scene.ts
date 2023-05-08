@@ -63,6 +63,7 @@ export class TournamentsScene extends Scene {
             }
 
             try {
+                await ctx.answerCbQuery('Это займёт не больше 10 секунд');
                 await tournamentsService.fetchTeamsStats(this.tournament);
                 const teamsBtns = tournamentsService.teamsButtons;
                 if (teamsBtns) {
@@ -84,7 +85,7 @@ export class TournamentsScene extends Scene {
                     text: errorMsg,
                 });
             } finally {
-                ctx.answerCbQuery();
+                await ctx.answerCbQuery();
             }
         });
 
@@ -105,11 +106,11 @@ export class TournamentsScene extends Scene {
                 } catch (error) {
                     ctx.reply(errorMsg);
                 } finally {
-                    ctx.answerCbQuery();
+                    await ctx.answerCbQuery();
                 }
             } else {
-                ctx.reply(errorMsg);
-                ctx.answerCbQuery();
+                await ctx.reply(errorMsg);
+                await ctx.answerCbQuery();
             }
         });
 
@@ -120,23 +121,34 @@ export class TournamentsScene extends Scene {
             } = await ctx.reply('Другие лиги:', {
                 reply_markup: { inline_keyboard: otherLeaguesKeyboard },
             });
-            ctx.answerCbQuery();
+            await ctx.answerCbQuery();
             this.othersMsgData = { messageId: message_id, chatId: id };
         });
 
         this.scene.action(this.checkers.isPlayersStatsAction, async (ctx) => {
             const teamRank: string = ctx.state.data;
             const tournament = this.tournament;
-            await ctx.answerCbQuery();
-            const { message_id, chat: { id } } = await ctx.reply('Подготовавливаем данные игроков...');
 
-            await tournamentsService.fetchPlayersStats(tournament, teamRank);
+            let messageId = null;
+            let chatId = null;
+
+            try {
+                await ctx.answerCbQuery('Это займёт не больше 20 секунд', { cache_time: 20_000 });
+                const { message_id, chat: { id } } = await ctx.reply('Подготовавливаем данные игроков...');
+                messageId = message_id;
+                chatId = id;
+                await tournamentsService.fetchPlayersStats(tournament, teamRank);
+            } catch (error) {
+                await ctx.telegram.editMessageText(chatId!, messageId!, '', errorMsg);
+                await ctx.answerCbQuery();
+                return;
+            }
             const playersButtons = tournamentsService.playersButtons;
 
             if(playersButtons && playersButtons.length) {
                 try {
                     await ctx.telegram.editMessageText(
-                        id, message_id, '',
+                        chatId, messageId, '',
                         { text: 'Выберите интересующего игрока:' },
                         {
                             reply_markup: {
@@ -146,19 +158,19 @@ export class TournamentsScene extends Scene {
                     );
 
                 } catch (error) {
-                    await ctx.telegram.editMessageText(id, message_id, '', errorMsg);
+                    await ctx.telegram.editMessageText(chatId, messageId, '', errorMsg);
                 }
             } else {
-                await ctx.telegram.editMessageText(id, message_id, '', errorMsg);
+                await ctx.telegram.editMessageText(chatId, messageId, '', errorMsg);
             }
-            ctx.answerCbQuery();
+            await ctx.answerCbQuery();
         });
 
         this.scene.action(this.checkers.isPlayerAction, async ctx => {
             const player = await ctx.state.data;
             const { template } = tournamentsService.getPlayerTemplate(player);
+            await ctx.answerCbQuery();
             await ctx.reply(template, {parse_mode: 'Markdown'});
-            ctx.answerCbQuery();
         });
 
     }

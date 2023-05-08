@@ -40,11 +40,12 @@ export class TournamentsService {
                 const browser = await puppeteer.launch();
                 const page = await browser.newPage();
                 const url = playersStats(tournament);
-                const timer = new Promise(ok => setTimeout(ok, 3000));
 
-                await Promise.race([page.goto(url).catch(e => void e), timer]);
-
+                await page.goto(url, { waitUntil: 'domcontentloaded' });
+                await page.waitForSelector('#div_stats_standard');
                 const content = await page.content();
+                browser.close();
+
                 this.playersContent = content;
             } catch (error) {
                 throw new Error('api error');
