@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { Firestore, getFirestore } from 'firebase/firestore';
+import { getFirestore } from 'firebase/firestore';
 import { ConfigService } from './config/config.service';
 
 const apiKey = new ConfigService().get('FIREBASE_API_KEY');
@@ -17,15 +17,5 @@ export const firebaseConfig = {
 	measurementId
 };
 
-export class FirebaseService {
-	static db: Firestore;
-
-	constructor() {
-		this.init();
-	}
-
-	private init() {
-		const app = initializeApp(firebaseConfig);
-		FirebaseService.db = getFirestore(app);
-	}
-}
+const app = initializeApp(firebaseConfig);
+export const db = getFirestore(app);

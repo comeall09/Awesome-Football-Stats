@@ -1,7 +1,8 @@
 import { Scenes, session, Telegraf } from 'telegraf';
 import { IContextBot } from './context/context.interface';
 import { IConfigService } from './config/config.interface';
-import { FirebaseService } from './firebase.config';
+// init firebase
+import './firebase.config';
 
 // commands
 import { Command } from './commands/command.class';
@@ -22,8 +23,6 @@ export class Bot {
     }
 
     init() {
-        // init firebase
-        new FirebaseService();
         // init scenes
         const todayMatchesScene = new TodayMatchesScene();
         const tournamentsScene = new TournamentsScene();

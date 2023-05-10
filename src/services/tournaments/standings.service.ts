@@ -1,7 +1,7 @@
 import * as cheerio from 'cheerio';
 import dayjs from 'dayjs';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { FirebaseService } from '../../firebase.config';
+import { db } from '../../firebase.config';
 
 import { webData } from '../../utils/api';
 import { Tournaments } from '../../entities/tournaments.interface';
@@ -118,7 +118,7 @@ class StandingsApi {
 // firebase api
 class StandingsFirebase {
     public async fetch(tournament: Tournaments): Promise<IStandings | undefined> {
-        const standingsRef = doc(FirebaseService.db, tournament, "standings");
+        const standingsRef = doc(db, tournament, "standings");
         try {
             const response = (await getDoc(standingsRef)).data() as { date: string, teams: IStandings } | undefined;
             const isExist = response && response.teams.length > 1;
@@ -131,7 +131,7 @@ class StandingsFirebase {
     }
 
     public async update(tournament: Tournaments, standings: IStandings) {
-        const standingsRef = doc(FirebaseService.db, tournament, 'standings');
+        const standingsRef = doc(db, tournament, 'standings');
         await updateDoc(standingsRef, {
             teams: standings,
             date: dayjs().format('YYYY-MM-DD')
