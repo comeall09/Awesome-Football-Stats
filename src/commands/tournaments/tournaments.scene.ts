@@ -4,7 +4,6 @@ import { IContextBot } from '../../context/context.interface';
 
 import { Scene } from '../scene.class';
 import { Tournaments } from '../../entities/tournaments.interface';
-import { TournamentsService } from '../../services/tournaments/tournaments.service';
 import { allLeaguesKeyboard, mainLeaguesKeyboard } from './keyboards';
 import { errorMsg, timeoutMsg } from '../helpers';
 import { PlayersStatsService } from '../../services/tournaments/playersStats.service';
@@ -29,7 +28,6 @@ export class TournamentsScene extends Scene {
     }
 
     actions() {
-        const tournamentsService = new TournamentsService();
         const standingsService = new StandingsService();
         const playersStatsService = new PlayersStatsService();
 
@@ -71,11 +69,11 @@ export class TournamentsScene extends Scene {
                 const { template, team: { Squad } } = standingsService.getStandingTeamTemplate(teamRank);
                 await ctx.reply(template, {
                     parse_mode: 'Markdown',
-                    // reply_markup: {
-                    //     inline_keyboard: [
-                    //         [{text: 'Статистика игроков', callback_data: `playersStats-${Squad}`}]
-                    //     ]
-                    // }
+                    reply_markup: {
+                        inline_keyboard: [
+                            [{text: 'Статистика игроков', callback_data: `playersStats-${Squad}`}]
+                        ]
+                    }
                 });
             } catch (error) {
                 await ctx.reply(errorMsg);
@@ -99,7 +97,7 @@ export class TournamentsScene extends Scene {
                 await ctx.answerCbQuery(timeoutMsg);
                 const { message_id } = await ctx.reply('Подготовавливаем данные игроков...');
                 msgId = message_id;
-                await playersStatsService.fetch(this.tournament, teamName);
+                await playersStatsService.fetch(this.tournament, teamName.trim());
                 // await tournamentsService.fetchPlayersStats(this.tournament, teamRank);
             } catch (error) {
                 await ctx.answerCbQuery();
@@ -108,7 +106,7 @@ export class TournamentsScene extends Scene {
                 return;
             }
 
-            const playersButtons = playersStatsService.getPlayersButtons(teamName);
+            const playersButtons = playersStatsService.getPlayersButtons();
             // const playersButtons = tournamentsService.playersButtons;
             await ctx.deleteMessage(msgId);
             if(playersButtons && playersButtons.length) {
