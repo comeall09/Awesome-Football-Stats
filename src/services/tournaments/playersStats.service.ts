@@ -6,8 +6,9 @@ import { db } from '../../firebase.config';
 
 import { webData } from '../../utils/api';
 import { positionDict } from '../../utils/dict';
+import { IPlayerStats } from './utils';
 import { Tournaments } from '../../entities/tournaments.interface';
-import { convertFlag, IPlayerStats, playerTemplate } from './helpers';
+import { convertFlag, playerTemplate } from './helpers';
 
 export class PlayersStatsService {
     private playersStats: IPlayerStats[];

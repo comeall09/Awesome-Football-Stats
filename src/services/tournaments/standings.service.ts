@@ -4,8 +4,9 @@ import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase.config';
 
 import { webData } from '../../utils/api';
+import { uefaIndicators, IStandings, ITeamStats } from './utils';
+import { teamTemplate } from './helpers';
 import { Tournaments } from '../../entities/tournaments.interface';
-import { indicators, IStandings, ITeamStats, teamTemplate } from './helpers';
 
 // public service
 export class StandingsService {
@@ -74,7 +75,7 @@ class StandingsApi {
                     // qualification indicator
                     // UCL
                     const text = $(el).text();
-                    const { ucl, uel, uecl, relagate } = indicators;
+                    const { ucl, uel, uecl, relagate } = uefaIndicators;
                     if ($(el).hasClass('qualifier1')) {
                         cells.push(`${ucl} ${text}`);
                         return;
