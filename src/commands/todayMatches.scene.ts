@@ -17,14 +17,16 @@ export class TodayMatchesScene extends Scene {
 
             try {
                 await todayMatches.fetchMatches();
-                if (todayMatches.template) {
-                    ctx.telegram.editMessageText(chatId, message_id, '', todayMatches.template, {
+                if (todayMatches.matches.length && todayMatches.template) {
+                    await ctx.telegram.editMessageText(chatId, message_id, '', todayMatches.template, {
                         parse_mode: 'Markdown',
                     });
                     return;
                 }
-            } catch (error) {
+                throw new Error();
+            } catch {
                 ctx.telegram.editMessageText(chatId, message_id, '', 'На сегодня матчей нет.');
+                ctx.scene.leave();
             }
         });
 
