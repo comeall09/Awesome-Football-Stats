@@ -8,39 +8,43 @@ import { uefaIndicators, IStandings, ITeamStats } from './utils';
 import { teamTemplate } from './helpers';
 import { Tournaments } from '../../entities/tournaments.interface';
 
-// public service
-export class StandingsService {
-    private standings: IStandings;
-    public standingsButtons: Record<string, string>[];
+export async function fetchStandings(league: Tournaments): Promise<Pick<ITeamStats, 'Rank' | 'Squad'>[]>; // return all teams of league buttons
+export async function fetchStandings(league: Tournaments, team: string): Promise<{ template: HTML, team: ITeamStats }>;
 
-    public async fetch(tournament: Tournaments): Promise<void> {
-        const firebase = new StandingsFirebase();
-        const ferbfApi = new StandingsApi();
+export async function fetchStandings(league: Tournaments, team?: string) {
+    const firebase = new StandingsFirebase();
+    const ferbfApi = new StandingsApi();
 
-        try {
-            const resp = await firebase.fetch(tournament);
-            if(resp) this.standings = resp;
-            else {
-                this.standings = await ferbfApi.fetch(tournament);
-                firebase.update(tournament, this.standings);
-            }
-            this.prepareStandingsButtons();
-        } catch {
-            throw new Error('page not found');
+    let standings;
+
+    try {
+        const resp = await firebase.fetch(league);
+        if(resp) standings = resp;
+        else {
+            standings = await ferbfApi.fetch(league);
+            firebase.update(league, standings);
         }
-    }
 
-    private prepareStandingsButtons(): void {
-        this.standingsButtons = this.standings.map(({ Rank, Squad }) => ({ Rank, Squad }));
-    }
-
-    public getStandingTeamTemplate(teamRank: string): { template: HTML, team: ITeamStats } {
-        const team = this.standings.find(({ Rank }) => Rank === teamRank);
-        if (team) {
-            return { template: teamTemplate(team), team };
+        if(team) {
+            return getStandingTeamTemplate(standings, team);
         }
-        throw new Error('team not found');
+
+        return getStandingsButtons(standings);
+    } catch {
+        throw new Error('page not found');
     }
+}
+
+function getStandingsButtons(standings: IStandings): Pick<ITeamStats, 'Rank' | 'Squad'>[] {
+    return standings.map(({ Rank, Squad }) => ({ Rank, Squad }));
+}
+
+function getStandingTeamTemplate(standings: IStandings, team: string): { template: HTML, team: ITeamStats } {
+    const teamData = standings.find(({ Squad }) => Squad === team) ?? {} as ITeamStats;
+    if (team) {
+        return { template: teamTemplate(teamData), team: teamData };
+    }
+    throw new Error('team not found');
 }
 
 // ferbf api

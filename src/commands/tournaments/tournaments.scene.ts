@@ -1,19 +1,16 @@
+import { IUserSessionData } from './../../context/context.interface';
 import { Scenes } from 'telegraf';
 import { InlineKeyboardButton } from 'telegraf/typings/core/types/typegram';
 import { IContextBot } from '../../context/context.interface';
 
-import { StandingsService } from '../../services/tournaments/standings.service';
-import { PlayersStatsService } from '../../services/tournaments/playersStats.service';
+import { fetchStandings } from '../../services/tournaments/standings.service';
+import { fetchPlayersStats } from '../../services/tournaments/playersStats.service';
 
-import { Tournaments } from '../../entities/tournaments.interface';
 import { allLeaguesKeyboard, mainLeaguesKeyboard } from './keyboards';
 import { errorMsg, timeoutMsg } from '../helpers';
 import { checkers } from './helpers';
 
 export const tournamentsScene = new Scenes.BaseScene<IContextBot>('tournamentsScene');
-
-const standingsService = new StandingsService();
-const playersStatsService = new PlayersStatsService();
 
 tournamentsScene.enter(async (ctx) => {
     await ctx.reply('Выберите интересующий турнир:', {
@@ -21,25 +18,21 @@ tournamentsScene.enter(async (ctx) => {
     });
 });
 
-let tournamentBackup: Tournaments;
-
 tournamentsScene.action(checkers.isTournamentsAction, async (ctx) => {
-    const { tournament } = ctx.state as { tournament: Tournaments};
-    // сохраняем тип турнира при первом выборе, дальше не меняем
-    tournamentBackup = tournament;
+    const { tournament: { league } } = ctx.session.data.find(({userId}) => userId === ctx.callbackQuery.from.id) ?? {} as IUserSessionData;
 
     try {
         await ctx.answerCbQuery(timeoutMsg);
         await ctx.editMessageText('Подготавливаем данные...');
-        await standingsService.fetch(tournament);
-        const standingsButtons = standingsService.standingsButtons;
+
+        const standingsButtons = await fetchStandings(league);
         if (standingsButtons) {
             await ctx.editMessageText(
                 'Турнирная таблица:\nВыберите клуб для получения подробной статистики',
                 { parse_mode: 'Markdown',
                     reply_markup: {
                         inline_keyboard: standingsButtons.reduce((btns: InlineKeyboardButton[][], { Rank, Squad }) => {
-                            const button = [{ text: `${Rank}. ${Squad}`, callback_data: `team-${Rank}` }];
+                            const button = [{ text: `${Rank}. ${Squad}`, callback_data: `team-${Squad}` }];
                             return [...btns, button];
                         }, []),
                      }
@@ -55,10 +48,10 @@ tournamentsScene.action(checkers.isTournamentsAction, async (ctx) => {
 });
 
 tournamentsScene.action(checkers.isTeamAction, async (ctx) => {
-    const teamRank = await ctx.state.teamRank;
+    const { tournament: { league, team } } = ctx.session.data.find(({userId}) => userId === ctx.callbackQuery.from.id) ?? {} as IUserSessionData;
 
     try {
-        const { template, team: { Squad } } = standingsService.getStandingTeamTemplate(teamRank);
+        const { template, team: { Squad } } = await fetchStandings(league, team);
         await ctx.reply(template, {
             parse_mode: 'Markdown',
             reply_markup: {
@@ -82,15 +75,15 @@ tournamentsScene.action('other-tournaments', async (ctx) => {
 });
 
 tournamentsScene.action(checkers.isPlayersStatsAction, async (ctx) => {
-    const teamName: string = await ctx.state.teamName;
+    const { tournament: { league, team } } = ctx.session.data.find(({userId}) => userId === ctx.callbackQuery.from.id) ?? {} as IUserSessionData;
     let msgId;
+    let playersButtons;
 
     try {
         await ctx.answerCbQuery(timeoutMsg);
         const { message_id } = await ctx.reply('Подготовавливаем данные игроков...');
         msgId = message_id;
-        await playersStatsService.fetch(tournamentBackup, teamName.trim());
-        // await tournamentsService.fetchPlayersStats(this.tournament, teamRank);
+        playersButtons = await fetchPlayersStats(league, team.trim());
     } catch (error) {
         await ctx.answerCbQuery();
         await ctx.deleteMessage(msgId);
@@ -98,8 +91,6 @@ tournamentsScene.action(checkers.isPlayersStatsAction, async (ctx) => {
         return;
     }
 
-    const playersButtons = playersStatsService.getPlayersButtons();
-    // const playersButtons = tournamentsService.playersButtons;
     await ctx.deleteMessage(msgId);
     if(playersButtons && playersButtons.length) {
         try {
@@ -121,10 +112,9 @@ tournamentsScene.action(checkers.isPlayersStatsAction, async (ctx) => {
 });
 
 tournamentsScene.action(checkers.isPlayerAction, async ctx => {
-    const player = await ctx.state.player;
-    const squad = await ctx.state.squad;
+    const { tournament: { league, team, player } } = ctx.session.data.find(({userId}) => userId === ctx.callbackQuery.from.id) ?? {} as IUserSessionData;
 
-    const template = playersStatsService.getPlayerTemplate(squad, player);
+    const template = await fetchPlayersStats(league, team, player);
     await ctx.answerCbQuery();
     await ctx.reply(template, { parse_mode: 'Markdown' });
 });

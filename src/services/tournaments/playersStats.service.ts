@@ -10,75 +10,78 @@ import { IPlayerStats } from './utils';
 import { Tournaments } from '../../entities/tournaments.interface';
 import { convertFlag, playerTemplate } from './helpers';
 
-export class PlayersStatsService {
-    private playersStats: IPlayerStats[];
-    private teamName: string;
+export async function fetchPlayersStats(league: Tournaments, teamName: string): Promise<Pick<IPlayerStats, 'Player' | 'Nation' | 'Squad' >[]>;
+export async function fetchPlayersStats(league: Tournaments, teamName: string, player: string): Promise<HTML>;
 
-    public async fetch(tournament: Tournaments, teamName: string): Promise<void> {
-        const firebase = new PlayerStatsFirebase();
-        const ferbfApi = new PlayersStatsApi();
-        // Запрашиваем если тима поменялась
-        if(this.teamName !== teamName) {
-            this.teamName = teamName;
-            try {
-                const playersStatsFb = await firebase.fetch(tournament, teamName);
-                if(playersStatsFb) {
-                    this.playersStats = playersStatsFb;
-                }
-                else {
-                    const playersStats = await ferbfApi.fetch(tournament);
-                    firebase.update(tournament, playersStats);
-                    this.playersStats = playersStats.filter(({ Squad }) => Squad === teamName);
-                }
-            } catch {
-                throw new Error('api error');
-            }
+export async function fetchPlayersStats(league: Tournaments, teamName: string, player?: string) {
+    const firebase = new PlayerStatsFirebase();
+    const ferbfApi = new PlayersStatsApi();
+
+    let playersStats;
+
+    try {
+        const playersStatsFb = await firebase.fetch(league, teamName);
+        if(playersStatsFb) {
+            playersStats = playersStatsFb;
         }
+        else {
+            const allPlayersStats = await ferbfApi.fetch(league);
+            firebase.update(league, allPlayersStats);
+            playersStats = allPlayersStats.filter(({ Squad }) => Squad === teamName);
+        }
+
+        if(player) {
+            return getPlayerTemplate(league, playersStats, teamName, player);
+        }
+        return getPlayersButtons(playersStats);
+    } catch {
+        throw new Error('api error');
     }
 
-    public getPlayersButtons(): Pick<IPlayerStats, 'Player' | 'Nation' | 'Squad' >[] {
-        return this.playersStats
-            .map(({ Player, Nation, Squad, Position }) => ({ Player, Nation: convertFlag(Nation), Squad, Position }))
-            .sort((a, b) => {
-                const positions = Object.keys(positionDict);
-                // Сначала сравниваем по GK
-                if (a.Position === positions[0]) {
-                    return -1;
-                } else if (b.Position === positions[0]) {
-                    return 1;
-                }
+}
 
-                // Затем по защите
-                const defensePositions = positions.slice(1, 6);
-                if (defensePositions.includes(a.Position) && !defensePositions.includes(b.Position)) {
-                    return -1;
-                } else if (!defensePositions.includes(a.Position) && defensePositions.includes(b.Position)) {
-                    return 1;
-                }
+function getPlayerTemplate(league: Tournaments, playersStats: IPlayerStats[], teamName: string, playerName: string): HTML {
+    const player = playersStats.find(({ Squad, Player }) => Squad === teamName && Player === playerName);
+    return playerTemplate(player!);
+}
 
-                // по полузащитникам
-                const midfieldPositions = positions.slice(6, 15);
-                if (midfieldPositions.includes(a.Position) && !midfieldPositions.includes(b.Position)) {
-                    return -1;
-                } else if (!midfieldPositions.includes(a.Position) && midfieldPositions.includes(b.Position)) {
-                    return 1;
-                }
+function getPlayersButtons(playersStats: IPlayerStats[]): Pick<IPlayerStats, 'Player' | 'Nation' | 'Squad' >[] {
+    return playersStats
+        .map(({ Player, Nation, Squad, Position }) => ({ Player, Nation: convertFlag(Nation), Squad, Position }))
+        .sort((a, b) => {
+            const positions = Object.keys(positionDict);
+            // Сначала сравниваем по GK
+            if (a.Position === positions[0]) {
+                return -1;
+            } else if (b.Position === positions[0]) {
+                return 1;
+            }
 
-                // по нападающим
-                const forwardsPositions = positions.slice(15);
-                if (forwardsPositions.includes(a.Position) && !forwardsPositions.includes(b.Position)) {
-                    return -1;
-                } else if (!forwardsPositions.includes(a.Position) && forwardsPositions.includes(b.Position)) {
-                    return 1;
-                }
-                return 0;
-            });
-    }
+            // Затем по защите
+            const defensePositions = positions.slice(1, 6);
+            if (defensePositions.includes(a.Position) && !defensePositions.includes(b.Position)) {
+                return -1;
+            } else if (!defensePositions.includes(a.Position) && defensePositions.includes(b.Position)) {
+                return 1;
+            }
 
-    public getPlayerTemplate(teamName: string, playerName: string): HTML {
-         const player = this.playersStats.find(({ Squad, Player }) => Squad === teamName && Player === playerName);
-        return playerTemplate(player!);
-    }
+            // по полузащитникам
+            const midfieldPositions = positions.slice(6, 15);
+            if (midfieldPositions.includes(a.Position) && !midfieldPositions.includes(b.Position)) {
+                return -1;
+            } else if (!midfieldPositions.includes(a.Position) && midfieldPositions.includes(b.Position)) {
+                return 1;
+            }
+
+            // по нападающим
+            const forwardsPositions = positions.slice(15);
+            if (forwardsPositions.includes(a.Position) && !forwardsPositions.includes(b.Position)) {
+                return -1;
+            } else if (!forwardsPositions.includes(a.Position) && forwardsPositions.includes(b.Position)) {
+                return 1;
+            }
+            return 0;
+        });
 }
 
 class PlayersStatsApi {

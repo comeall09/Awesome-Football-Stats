@@ -1,11 +1,23 @@
+import { IUserSessionData } from './../../context/context.interface';
 import { IContextBot } from '../../context/context.interface';
 import { Tournaments } from '../../entities/tournaments.interface';
 
 export const checkers = {
     isTournamentsAction(val: string, ctx: IContextBot): RegExpExecArray | null {
-        // при первом клике сохраняем выбранный турнир
         if (Object.values(Tournaments).includes(val as Tournaments)) {
-            ctx.state.tournament = val;
+            const currentUserData: IUserSessionData = {
+                userId: ctx.callbackQuery!.from.id,
+                tournament: { league: val as Tournaments, team: '', player: '' }
+            };
+
+            const allUsersExceptCurrent = ctx.session.data?.filter(({userId}) => userId !== ctx.callbackQuery?.from.id);
+
+            if(!ctx.session.data) {
+                ctx.session.data = [currentUserData];
+            } else {
+                ctx.session.data = [...allUsersExceptCurrent, currentUserData];
+            }
+
             return {} as RegExpExecArray;
         } else if (val === 'backToTeams') {
             return {} as RegExpExecArray;
@@ -15,7 +27,16 @@ export const checkers = {
     isTeamAction(val: string, ctx: IContextBot): RegExpExecArray | null {
         if (val.startsWith('team')) {
             if (ctx.callbackQuery && 'data' in ctx.callbackQuery) {
-                ctx.state.teamRank = ctx.callbackQuery.data.slice(5); // slice "team-"
+                const team = ctx.callbackQuery.data.slice(5); // slice "team-"
+                const currentUserData = ctx.session.data.find(({userId}) => userId === ctx.callbackQuery?.from.id) ?? {} as IUserSessionData;
+                const allUsersExceptCurrent = ctx.session.data.filter(({userId}) => userId !== ctx.callbackQuery?.from.id);
+                ctx.session.data = [
+                    ...allUsersExceptCurrent,
+                    {
+                        userId: currentUserData.userId,
+                        tournament: {...currentUserData.tournament, team}
+                    }
+                ];
             }
             return {} as RegExpExecArray;
         }
@@ -24,7 +45,17 @@ export const checkers = {
     isPlayersStatsAction(val: string, ctx: IContextBot): RegExpExecArray | null {
         if(val.startsWith('playersStats-')) {
             if (ctx.callbackQuery && 'data' in ctx.callbackQuery) {
-                ctx.state.teamName = ctx.callbackQuery.data.slice(13); // slice "playersStats-"
+                const team = ctx.callbackQuery.data.slice(13); // slice "playersStats-"
+                const currentUserData = ctx.session.data.find(({userId}) => userId === ctx.callbackQuery?.from.id) ?? {} as IUserSessionData;
+                const allUsersExceptCurrent = ctx.session.data.filter(({userId}) => userId !== ctx.callbackQuery?.from.id);
+
+                ctx.session.data = [
+                    ...allUsersExceptCurrent,
+                    {
+                        userId: currentUserData.userId,
+                        tournament: {...currentUserData.tournament, team}
+                    }
+                ];
             }
             return {} as RegExpExecArray;
         }
@@ -34,8 +65,16 @@ export const checkers = {
         if(val.startsWith('playerInfo-')) {
             if (ctx.callbackQuery && 'data' in ctx.callbackQuery) {
                 const [_, player, squad] = ctx.callbackQuery.data.split('-');
-                ctx.state.player = player;
-                ctx.state.squad = squad;
+
+                const currentUserData = ctx.session.data.find(({userId}) => userId === ctx.callbackQuery?.from.id) ?? {} as IUserSessionData;
+                const allUsersExceptCurrent = ctx.session.data.filter(({userId}) => userId !== ctx.callbackQuery?.from.id);
+                ctx.session.data = [
+                    ...allUsersExceptCurrent,
+                    {
+                        userId: currentUserData.userId,
+                        tournament: {...currentUserData.tournament, team: squad, player}
+                    }
+                ];
             }
             return {} as RegExpExecArray;
         }
