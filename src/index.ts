@@ -20,17 +20,17 @@ const bot = new Telegraf<IContextBot>(new ConfigService().get('BOT_TOKEN'));
 bot.use(session());
 bot.use(stage.middleware());
 // permissions
-bot.use(async (ctx, next)=> {
-    if("message" in ctx.update) {
-        const userId = ctx.update.message.from.id;
-        const hasPermission = permissions.find(({id}) => id === userId);
-        if(!hasPermission) {
-            await ctx.reply('Для получения доступа, напиши автору бота: @chupapee');
-            return;
-        }
-        return next();
-    }
-});
+// bot.use(async (ctx, next)=> {
+//     if("message" in ctx.update) {
+//         const userId = ctx.update.message.from.id;
+//         const hasPermission = permissions.find(({id}) => id === userId);
+//         if(!hasPermission) {
+//             await ctx.reply('Для получения доступа, напиши автору бота: @chupapee');
+//             return;
+//         }
+//         return next();
+//     }
+// });
 
 bot.catch((err, ctx) => {
     ctx.reply("Что-то пошло не так... попробуйте позже");

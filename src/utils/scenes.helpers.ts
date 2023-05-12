@@ -9,9 +9,9 @@ export const permissions = [
 ];
 
 export const scenesUtils: IScene[] = [
-    { name: 'uclScene', action: '🇪🇺 Лига Чемпионов УЕФА 🔥' },
-    { name: 'tournamentsScene', action: 'Чемпионаты 🏆' },
+    // { name: 'uclScene', action: '🇪🇺 Лига Чемпионов УЕФА 🔥' },
     { name: 'todayMatchesScene', action: 'Матчи дня ⚽️' },
+    { name: 'tournamentsScene', action: 'Чемпионаты 🏆' },
     // { name: 'liveMatchesScene', action: 'Матчи в Live 💥' },
     // { name: 'teamsScene', action: 'Команды 🥇' },
     // { name: 'playersScene', action: 'Игроки 👤' },
