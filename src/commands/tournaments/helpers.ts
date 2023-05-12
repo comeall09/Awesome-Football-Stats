@@ -62,9 +62,9 @@ export const checkers = {
         return null;
     },
     isPlayerAction(val: string, ctx: IContextBot): RegExpExecArray | null {
-        if(val.startsWith('playerInfo-')) {
+        if(val.startsWith('playerInfo@')) {
             if (ctx.callbackQuery && 'data' in ctx.callbackQuery) {
-                const [_, player, squad] = ctx.callbackQuery.data.split('-');
+                const [_, player, squad] = ctx.callbackQuery.data.split('@');
 
                 const currentUserData = ctx.session.data.find(({userId}) => userId === ctx.callbackQuery?.from.id) ?? {} as IUserSessionData;
                 const allUsersExceptCurrent = ctx.session.data.filter(({userId}) => userId !== ctx.callbackQuery?.from.id);

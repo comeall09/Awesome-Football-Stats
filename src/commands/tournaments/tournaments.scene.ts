@@ -98,7 +98,7 @@ tournamentsScene.action(checkers.isPlayersStatsAction, async (ctx) => {
                 'Выберите интересующего игрока:',
                 {
                     reply_markup: {
-                        inline_keyboard: playersButtons.map(({ Nation, Player, Squad }) => ([{text: `${Nation} ${Player}`, callback_data: `playerInfo-${Player}-${Squad}`}]))
+                        inline_keyboard: playersButtons.map(({ Nation, Player, Squad }) => ([{text: `${Nation} ${Player}`, callback_data: `playerInfo@${Player}@${Squad}`}]))
                     }
                 }
             );

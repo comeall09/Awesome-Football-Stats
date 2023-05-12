@@ -31,7 +31,7 @@ export async function fetchPlayersStats(league: Tournaments, teamName: string, p
         }
 
         if(player) {
-            return getPlayerTemplate(league, playersStats, teamName, player);
+            return getPlayerTemplate(playersStats, player);
         }
         return getPlayersButtons(playersStats);
     } catch {
@@ -40,8 +40,8 @@ export async function fetchPlayersStats(league: Tournaments, teamName: string, p
 
 }
 
-function getPlayerTemplate(league: Tournaments, playersStats: IPlayerStats[], teamName: string, playerName: string): HTML {
-    const player = playersStats.find(({ Squad, Player }) => Squad === teamName && Player === playerName);
+function getPlayerTemplate(playersStats: IPlayerStats[], playerName: string): HTML {
+    const player = playersStats.find(({ Player }) => Player === playerName);
     return playerTemplate(player!);
 }
 
