@@ -39,7 +39,7 @@ bot.catch((err, ctx) => {
 bot.start(async (ctx) => {
     ctx.reply(
         'Главное меню, выберите интересующий раздел:',
-        Markup.keyboard(scenesKeyboard()).oneTime().resize()
+        Markup.keyboard(scenesKeyboard()).resize()
     );
 });
 
