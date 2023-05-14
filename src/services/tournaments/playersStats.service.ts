@@ -90,7 +90,7 @@ class PlayersStatsApi {
         const { queries: { playersStats } } = webData.ferbf;
         if(!this.page) {
             try {
-                const browser = await puppeteer.launch({ headless: 'new' });
+                const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'] });
                 const page = await browser.newPage();
                 const url = playersStats(tournament);
 
@@ -116,16 +116,9 @@ class PlayersStatsApi {
             headers.push($(el).attr('aria-label') as keyof IPlayerStats);
         });
 
-        const teamCells: cheerio.Element[] = [];
-        table.find('table tbody tr').each((_, cell) => {
-            $(cell).each(((n, tr) => {
-                teamCells.push(tr);
-            }));
-        });
-
         const playersStats: IPlayerStats[] = [];
-        $(teamCells).each((_, el) => {
-            el.children.map((str, i) => {
+        table.find('table tbody tr').each((_, team) => {
+            team.children.map((str, i) => {
                 const index = i % headers.length;
                 const text = $(str).text();
                 if(index === 0) {

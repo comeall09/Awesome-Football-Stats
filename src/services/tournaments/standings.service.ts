@@ -8,7 +8,7 @@ import { uefaIndicators, IStandings, ITeamStats } from './utils';
 import { teamTemplate } from './helpers';
 import { Tournaments } from '../../entities/tournaments.interface';
 
-export async function fetchStandings(league: Tournaments): Promise<Pick<ITeamStats, 'Rank' | 'Squad'>[]>; // return all teams of league buttons
+export async function fetchStandings(league: Tournaments): Promise<Pick<ITeamStats, 'Rank' | 'Squad' | 'Points'>[]>; // return all teams of league buttons
 export async function fetchStandings(league: Tournaments, team: string): Promise<{ template: HTML, team: ITeamStats }>;
 
 export async function fetchStandings(league: Tournaments, team?: string) {
@@ -35,8 +35,8 @@ export async function fetchStandings(league: Tournaments, team?: string) {
     }
 }
 
-function getStandingsButtons(standings: IStandings): Pick<ITeamStats, 'Rank' | 'Squad'>[] {
-    return standings.map(({ Rank, Squad }) => ({ Rank, Squad }));
+function getStandingsButtons(standings: IStandings): Pick<ITeamStats, 'Rank' | 'Squad' | 'Points'>[] {
+    return standings.map(({ Rank, Squad, Points }) => ({ Rank, Squad, Points }));
 }
 
 function getStandingTeamTemplate(standings: IStandings, team: string): { template: HTML, team: ITeamStats } {
