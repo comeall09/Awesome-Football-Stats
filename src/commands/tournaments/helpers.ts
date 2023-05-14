@@ -2,6 +2,14 @@ import { IUserSessionData } from './../../context/context.interface';
 import { IContextBot } from '../../context/context.interface';
 import { Tournaments } from '../../entities/tournaments.interface';
 
+export const actions = {
+    BACK_TO_TOURNAMENTS_SCENE: 'backTotournamentsScene',
+    STANDINGS_ACTION: 'standingsAction',
+    STATS_ACTION: 'statsAction',
+    STAT_KEY_ACTION: 'stat@',
+    REENTER_ACTION: 'reenterAction',
+};
+
 export const checkers = {
     isTournamentsAction(val: string, ctx: IContextBot): RegExpExecArray | null {
         if (Object.values(Tournaments).includes(val as Tournaments)) {
@@ -75,6 +83,16 @@ export const checkers = {
                         tournament: {...currentUserData.tournament, team: squad, player}
                     }
                 ];
+            }
+            return {} as RegExpExecArray;
+        }
+        return null;
+    },
+    isStatKeyAction(val: string, ctx: IContextBot): RegExpExecArray | null {
+        if(val.startsWith(actions.STAT_KEY_ACTION)) {
+            if (ctx.callbackQuery && 'data' in ctx.callbackQuery) {
+                const statKey = ctx.callbackQuery.data.split('@')[1];
+                ctx.state.statKey = statKey;
             }
             return {} as RegExpExecArray;
         }

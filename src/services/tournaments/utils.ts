@@ -4,24 +4,24 @@ export type IStandings = ITeamStats[];
 export interface ITeamStats {
     Rank: string;
     Squad: string;
-    "Matches Played": string;
-    Wins: string,
-    Draws: string,
-    Losses: string,
-    'Goals For': string,
-    'Goals Against': string,
-    'Goal Difference': string,
-    Points: string,
-    'Points/Game': string,
-    xG?: string,
-    'xG Allowed'?: string,
-    'xG Difference'?: string,
-    'xG Difference/90'?: string,
-    'Last 5': string,
-    'Attendance/Game': string,
-    'Top Team Scorer': string,
-    Goalkeeper: string,
-    Notes: string
+    'Matches Played': string;
+    Wins: string;
+    Draws: string;
+    Losses: string;
+    'Goals For': string;
+    'Goals Against': string;
+    'Goal Difference': string;
+    Points: string;
+    'Points/Game': string;
+    xG?: string;
+    'xG Allowed'?: string;
+    'xG Difference'?: string;
+    'xG Difference/90'?: string;
+    'Last 5': string;
+    'Attendance/Game': string;
+    'Top Team Scorer': string;
+    Goalkeeper: string;
+    Notes: string;
 }
 
 export interface IPlayerStats {
@@ -43,7 +43,7 @@ export interface IPlayerStats {
     "Non-Penalty Goals": string; // Non-Penalty Goals
 
     'Penalty Kicks Made': string;
-    'Penalty Kicks Attempted':string;
+    'Penalty Kicks Attempted': string;
 
     "Yellow Cards": string; // Yellow Cards
     "Red Cards": string; // Red Cards
@@ -69,3 +69,73 @@ export interface IPlayerStats {
     'npxG/90': string;
     // 'npxG + xAG': string;
 }
+
+export interface IStatItem {
+    rank: string;
+    who: string;
+    value: string;
+}
+
+export interface IStatisticsMain {
+    Goals: IStatItem[],
+    Assists: IStatItem[],
+    'Goals + Assists': IStatItem[],
+    'Non-Penalty Goals': IStatItem[],
+    'Shots Total': IStatItem[],
+    'xG': IStatItem[],
+    'xAG': IStatItem[],
+    'npxG': IStatItem[],
+    'Key Passes': IStatItem[],
+    'Pass Completion %': IStatItem[],
+    'Progressive Passes': IStatItem[],
+    'Shot-Creating Actions': IStatItem[],
+    'Tackles': IStatItem[],
+    'Blocks': IStatItem[],
+    'Interceptions': IStatItem[],
+    'Clearances': IStatItem[],
+    'Touches': IStatItem[],
+    'Successful Take-Ons': IStatItem[],
+    'Progressive Carries': IStatItem[],
+    'Progressive Passes Rec': IStatItem[],
+    'Minutes': IStatItem[],
+    'Points per Match': IStatItem[],
+    'Yellow Cards': IStatItem[],
+    'Red Cards': IStatItem[],
+    'Clean Sheets': IStatItem[],
+    'Saves': IStatItem[],
+    'Aerials won': IStatItem[];
+}
+
+export type IStatisticsAdditional = Record<string, IStatItem[]>;
+
+export interface IStatistics extends IStatisticsMain, IStatisticsAdditional { }
+
+export const mainStatsKeys: Record<keyof IStatisticsMain, string> = {
+    'Goals': '',
+    'Assists': '',
+    'Goals + Assists': '',
+    'Non-Penalty Goals': '',
+    'Shots Total': '',
+    'xG': '',
+    'xAG': '',
+    'npxG': '',
+    'Key Passes': '',
+    'Pass Completion %': '',
+    'Progressive Passes': '',
+    'Shot-Creating Actions': '',
+    'Tackles': '',
+    'Blocks': '',
+    'Interceptions': '',
+    'Clearances': '',
+    'Touches': '',
+    'Successful Take-Ons': '',
+    'Progressive Carries': '',
+    'Progressive Passes Rec': '',
+    'Minutes': '',
+    'Points per Match': '',
+    'Yellow Cards': '',
+    'Red Cards': '',
+    'Clean Sheets': '',
+    'Saves': '',
+    'Aerials won': '',
+};

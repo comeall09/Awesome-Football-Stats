@@ -5,12 +5,13 @@ import './firebase.config';
 
 // scenes
 import { scenesUtils, permissions, scenesKeyboard } from './utils/scenes.helpers';
-import { todayMatchesScene, tournamentsScene, UclScene } from './commands/index';
+import { leagueScene, todayMatchesScene, tournamentsScene, UclScene } from './commands/index';
 import { ConfigService } from './config/config.service';
 
 const uclScene = new UclScene();
 const stage = new Scenes.Stage<IContextBot>([
     todayMatchesScene,
+    leagueScene,
     tournamentsScene,
     uclScene.scene,
 ]);
@@ -32,7 +33,13 @@ bot.use(stage.middleware());
 //     }
 // });
 
+// bot.use(async (ctx, next) => {
+//     console.log(ctx);
+//     await next();
+// });
+
 bot.catch((err, ctx) => {
+    console.log(err, 'INDEX.TS');
     ctx.reply("Что-то пошло не так... попробуйте позже");
 });
 

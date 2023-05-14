@@ -16,10 +16,31 @@ export const LeaguesDict = {
     'Saudi Pro League': '🇸🇦 Сауд. Про-Лига',
 };
 
-export const standingsDict = {
-    Rank: 'Место',
+const baseDict = {
     Squad: 'Команда',
     'Matches Played': '🆚 Матчей сыграно',
+    "Yellow Cards": '🟨 Желтые карточки',
+    "Red Cards": '🟥 Красные карточки',
+    Minutes: '🕒 Сыграно минут',
+
+    Goals: '⚽️ Голы',
+    Assists: '🅰️ Ассисты',
+    "Goals + Assists": '📊 Г+А',
+
+    xG: '🔺 Ожидаемые голы (xG)',
+    xAG: '🅰️ Ожидаемые ассисты (xAG)',
+
+    'Progressive Passes Rec': '📈 Усп. передачи с продвижением',
+    'Progressive Passes': '📈 Передачи с продвижением',
+
+    'Non-Penalty Goals': '⚽️ Голы (не с пенальти)',
+    'Progressive Carries': '📈 Продвижение мяча',
+};
+
+export const standingsDict = {
+    Rank: 'Место',
+    Squad: baseDict.Squad,
+    'Matches Played': baseDict['Matches Played'],
     Wins: '🏆 Победы',
     Draws: '🤝 Ничьи',
     Losses: '🚫 Поражения',
@@ -28,7 +49,7 @@ export const standingsDict = {
     'Goal Difference': '♻️ Разница мячей',
     Points: '✅ Очки',
     'Points/Game': '♻️ Очки/Матчи',
-    xG: '🔺 Ожидаемые голы (xG)',
+    xG: baseDict.xG,
     'xG Allowed': '🔻 Допущенные xG',
     'xG Difference': '📊 Разница xG',
     'xG Difference/90': '♻️ Разница xG/Матч',
@@ -66,34 +87,99 @@ export const playerDict = {
     Player: 'Игрок', // full name
     Nation: 'Национальность',
     Position: '⚡️ Позиция',
-    Squad: 'Клуб', // team name
+    Squad: baseDict.Squad,
     "Current age": '📆 Возраст',
 
-    "Matches Played": '📊 Сыграно матчей', // Matches Played
+    "Matches Played": baseDict['Matches Played'],
     Starts: '⏳ Матчей со старта',
-    Minutes: '🕒 Сыграно минут',
+    Minutes: baseDict.Minutes,
     "90s Played": '♻️ Среднее число матчей к 90мин', // среднее количество минут/матч
-    "Yellow Cards": '🟨 Желтые карточки', // Yellow Cards
-    "Red Cards": '🟥 Красные карточки', // Red Cards
+    "Yellow Cards": baseDict['Yellow Cards'],
+    "Red Cards": baseDict['Red Cards'],
 
-    Goals: '⚽️ Голы', // goals
-    Assists: '🅰️ Ассисты', // assists
-    "Goals + Assists": '📊 Г+А', // goals + assists
-    "Non-Penalty Goals": '♻️ Голы не с пенальти', // Non-Penalty Goals,
+    Goals: baseDict.Goals,
+    Assists: baseDict.Assists,
+    "Goals + Assists": baseDict['Goals + Assists'],
+    "Non-Penalty Goals": baseDict['Non-Penalty Goals'],
 
     'Penalty Kicks Made': '⚽️ Забито с пенальти',
     'Penalty Kicks Attempted': '❌ Промазано пенальти',
 
-    'Progressive Carries': '📊 Продвижение мяча', // Progressive Carries продвижение мяча в сторону ворот соперника
-    'Progressive Passes': '📈 Передачи с продвижением',  // Progressive Passes пас с продвижением мяча в сторону ворот соперника
-    'Progressive Passes Rec': '♻️ Успешные передачи с продвижением', // Progressive Passes Received успешные пасы с продвижением мяча в сторону ворот соперника
+    'Progressive Carries': baseDict['Progressive Carries'],
+    'Progressive Passes': baseDict['Progressive Passes'],
+    'Progressive Passes Rec': baseDict['Progressive Passes Rec'],
 
-    xG: '⚽️ Ожидаемые голы (xG)',
+    xG: baseDict.xG,
     "Non-Penalty xG": '📈 xG без учёта пенальти (npxG)', // Non-Penalty xG
-    xAG: '♻️ Ожидаемые ассисты (xAG)', // Expected Assisted goals ожидаемые ассисты
+    xAG: baseDict.xAG,
     "npxG + xAG": '📊 npxG + xAG',
 
     "Non-Penalty Goals + Assists/90": '📊 Голы + Ассисты без учёта пенальти',
     'xG + xAG/90': '📈 xG + xAG',
     'npxG/90': '♻️ xG без учёта пенальти (npxG)/90мин',
 };
+
+export const statisticsDict: Record<string, string> = {
+    "Goals": baseDict.Goals,
+    "Assists": baseDict.Assists,
+    "Goals + Assists": baseDict['Goals + Assists'],
+
+    'Key Passes': '📈 Ключевые передачи',
+    Touches: 'Касания мяча',
+    'Successful Take-Ons': '🥇 Успешные дриблинги',
+    'Red Cards': baseDict['Red Cards'],
+    'Yellow Cards': baseDict['Yellow Cards'],
+    'Pass Completion %': '📊 % Успешных передач',
+    xG: baseDict.xG,
+    xAG: baseDict.xAG,
+    'Shots Total': '🎯 Удары',
+    'Progressive Passes Rec': baseDict['Progressive Passes Rec'],
+    'Progressive Passes': baseDict['Progressive Passes'],
+    'Progressive Carries': baseDict['Progressive Carries'],
+    Blocks: '🚫 Блокировки ударов',
+    'Aerials won': '🔱 Выигранные воздушные дуэли',
+    'Non-Penalty Goals': baseDict['Non-Penalty Goals'],
+    Minutes: baseDict.Minutes,
+    Clearances: '⭕️ Выносы мяча',
+    'Shot-Creating Actions': '💢 Действия, приведшие к ударам',
+    'Points per Match': '🟢 Очки за матч',
+    Tackles: '⚠️ Отборы',
+    Interceptions: '✅ Перехваты',
+
+    'Clean Sheets': '🔒 Сухие матчи',
+    Saves: '🥅 Сейвы',
+};
+
+export const statsPriorityOrder = [
+    "Goals",
+    "Assists",
+    "Goals + Assists",
+    "Non-Penalty Goals",
+    "xG",
+    "xAG",
+    "Shots Total",
+    "Key Passes",
+    "Pass Completion %",
+    "Minutes",
+
+    "Progressive Passes",
+    "Progressive Passes Rec",
+    "Progressive Carries",
+
+    "Successful Take-Ons",
+    "Shot-Creating Actions",
+
+    "Aerials won",
+    "Interceptions",
+    "Tackles",
+    "Blocks",
+    "Clearances",
+    'Touches',
+
+    "Clean Sheets",
+    "Saves",
+
+    "Points per Match",
+    "Yellow Cards",
+    "Red Cards",
+];

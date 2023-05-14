@@ -66,6 +66,7 @@ export const webData = {
         }),
         queries: {
             standings: {
+                baseUrl: `${WEBDATA_BASE_URL}/comps/`,
                 UCL: standings.UCL,
                 EPL: standings.EPL,
                 LALIGA: standings.LALIGA,
