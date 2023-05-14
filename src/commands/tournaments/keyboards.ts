@@ -17,7 +17,7 @@ export const mainLeaguesKeyboard = [
         { text: LeaguesDict['Eredivisie'], callback_data: Tournaments.EREDIVISIE },
     ],
 
-    [{ text: 'Другие лиги', callback_data: 'other-tournaments' }]
+    [{ text: '🌎 Другие лиги', callback_data: 'other-tournaments' }]
 ];
 
 export const allLeaguesKeyboard = [

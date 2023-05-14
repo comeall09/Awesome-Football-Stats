@@ -16,6 +16,24 @@ export const LeaguesDict = {
     'Saudi Pro League': '🇸🇦 Сауд. Про-Лига',
 };
 
+export const tournamentsDict = {
+    UCL: LeaguesDict['UEFA Champions League'],
+    EPL: LeaguesDict['Premier League'],
+    LALIGA: LeaguesDict['Primera Division'],
+    SERIEA: LeaguesDict['Serie A'],
+    BUNDESLIGA: LeaguesDict.Bundesliga,
+    LIGUE1: LeaguesDict['Ligue 1'],
+    PRIMEIRALIGA: LeaguesDict['Primeira Liga'],
+
+    UKRAINELIGA: LeaguesDict['Ukrainian Premier League'],
+    RUSSIANLIGA: LeaguesDict['Russian Premier League'],
+    EREDIVISIE: LeaguesDict.Eredivisie,
+    BELGIANLIGA: LeaguesDict['Belgian Pro League'],
+    SCOTTISHLIGA: LeaguesDict['Scottish Premier League'],
+    SAUDILIGA: LeaguesDict['Saudi Pro League'],
+    TURKISHLIGA: LeaguesDict['Turkish Süper Lig'],
+};
+
 const baseDict = {
     Squad: 'Команда',
     'Matches Played': '🆚 Матчей сыграно',
@@ -125,7 +143,7 @@ export const statisticsDict: Record<string, string> = {
     "Goals + Assists": baseDict['Goals + Assists'],
 
     'Key Passes': '📈 Ключевые передачи',
-    Touches: 'Касания мяча',
+    Touches: '✴️ Касания мяча',
     'Successful Take-Ons': '🥇 Успешные дриблинги',
     'Red Cards': baseDict['Red Cards'],
     'Yellow Cards': baseDict['Yellow Cards'],
@@ -136,7 +154,7 @@ export const statisticsDict: Record<string, string> = {
     'Progressive Passes Rec': baseDict['Progressive Passes Rec'],
     'Progressive Passes': baseDict['Progressive Passes'],
     'Progressive Carries': baseDict['Progressive Carries'],
-    Blocks: '🚫 Блокировки ударов',
+    Blocks: '🚫 Заблокированные удары',
     'Aerials won': '🔱 Выигранные воздушные дуэли',
     'Non-Penalty Goals': baseDict['Non-Penalty Goals'],
     Minutes: baseDict.Minutes,
@@ -145,6 +163,8 @@ export const statisticsDict: Record<string, string> = {
     'Points per Match': '🟢 Очки за матч',
     Tackles: '⚠️ Отборы',
     Interceptions: '✅ Перехваты',
+    'Fouls Committed': '❌ Фолы',
+    'Fouls Drawn': '❎ Заработанные фолы',
 
     'Clean Sheets': '🔒 Сухие матчи',
     Saves: '🥅 Сейвы',
@@ -175,6 +195,8 @@ export const statsPriorityOrder = [
     "Blocks",
     "Clearances",
     'Touches',
+    'Fouls Committed',
+    'Fouls Drawn',
 
     "Clean Sheets",
     "Saves",

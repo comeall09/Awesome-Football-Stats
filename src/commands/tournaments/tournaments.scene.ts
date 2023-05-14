@@ -6,8 +6,10 @@ import { checkers } from './helpers';
 
 export const tournamentsScene = new Scenes.BaseScene<IContextBot>('tournamentsScene');
 
+const chooseLeague = '🏆 Выберите интересующий турнир:';
+
 tournamentsScene.enter(async (ctx) => {
-    await ctx.reply('Выберите интересующий турнир:', {
+    await ctx.reply(chooseLeague, {
         reply_markup: { inline_keyboard: mainLeaguesKeyboard },
     });
 });
@@ -19,7 +21,7 @@ tournamentsScene.action(checkers.isTournamentsAction, async (ctx) => {
 });
 
 tournamentsScene.action('other-tournaments', async (ctx) => {
-    await ctx.editMessageText('Выберите интересующий турнир:', {
+    await ctx.editMessageText(chooseLeague, {
         reply_markup: { inline_keyboard: allLeaguesKeyboard },
     });
     await ctx.answerCbQuery();

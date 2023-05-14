@@ -2,18 +2,23 @@ import { Scenes } from 'telegraf';
 import { InlineKeyboardButton } from 'telegraf/typings/core/types/typegram';
 import { IContextBot, IUserSessionData } from '../../../context/context.interface';
 
+import { Tournaments } from '../../../entities/tournaments.interface';
 import { errorMsg, timeoutMsg } from '../../helpers';
 import { actions, checkers } from '../helpers';
-import { statisticsDict } from '../../../utils/dict';
+import { statisticsDict, tournamentsDict } from '../../../utils/dict';
 
 import { fetchStandings } from '../../../services/tournaments/standings.service';
 import { fetchStatistics } from '../../../services/tournaments/statistics.service';
 import { fetchPlayersStats } from '../../../services/tournaments/playersStats.service';
 
+const leagueFlag = (league: Tournaments) => tournamentsDict[league].split(' ')[0];
+
 export const leagueScene = new Scenes.BaseScene<IContextBot>('leagueScene');
 
 leagueScene.enter(async (ctx) => {
-    await ctx.editMessageText('Выберите интересующий раздел:', {
+    const { tournament: { league } } = ctx.session.data.find(({ userId }) => userId === ctx.callbackQuery?.from.id) ?? {} as IUserSessionData;
+
+    await ctx.editMessageText(`${tournamentsDict[league]}:`, {
         reply_markup: {
             inline_keyboard: [
                 [{ text: '📈 Турнирная таблица', callback_data: actions.STANDINGS_ACTION }],
@@ -30,12 +35,13 @@ leagueScene.action(actions.REENTER_ACTION, async (ctx) => {
 
 leagueScene.action(actions.STATS_ACTION, async (ctx) => {
     const { tournament: { league } } = ctx.session.data.find(({ userId }) => userId === ctx.callbackQuery.from.id) ?? {} as IUserSessionData;
+
     try {
         await ctx.answerCbQuery(timeoutMsg);
         const statsButtons = await fetchStatistics(league, false);
 
         if(statsButtons.length) {
-            await ctx.editMessageText('Выберите интересующий раздел', {
+            await ctx.editMessageText(`${leagueFlag(league)} Выберите интересующий раздел:`, {
                 reply_markup: {
                     inline_keyboard: [
                         ...statsButtons.reduce((acc: InlineKeyboardButton[][], statKey, i) => {
@@ -66,7 +72,20 @@ leagueScene.action(checkers.isStatKeyAction, async (ctx) => {
     const statKey: string = ctx.state.statKey;
     const stat = await fetchStatistics(league, false, statKey);
     await ctx.answerCbQuery();
-    await ctx.reply(stat, { parse_mode: 'Markdown' });
+    await ctx.reply(
+        stat,
+        {
+            parse_mode: 'Markdown',
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        {text: '🔙 В начало', callback_data: actions.REENTER_ACTION},
+                        {text: '🏆 К чемпионатам', callback_data: actions.BACK_TO_TOURNAMENTS_SCENE}
+                    ],
+                ]
+            }
+        }
+    );
 });
 
 leagueScene.action(actions.STANDINGS_ACTION, async (ctx) => {
@@ -79,7 +98,7 @@ leagueScene.action(actions.STANDINGS_ACTION, async (ctx) => {
         const standingsButtons = await fetchStandings(league);
         if (standingsButtons) {
             await ctx.editMessageText(
-                'Турнирная таблица:\nВыберите клуб для получения подробной статистики',
+                `${leagueFlag(league)} Турнирная таблица:\nВыберите клуб для получения подробной статистики`,
                 {
                     parse_mode: 'Markdown',
                     reply_markup: {

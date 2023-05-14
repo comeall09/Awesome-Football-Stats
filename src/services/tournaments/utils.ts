@@ -77,33 +77,35 @@ export interface IStatItem {
 }
 
 export interface IStatisticsMain {
-    Goals: IStatItem[],
-    Assists: IStatItem[],
-    'Goals + Assists': IStatItem[],
-    'Non-Penalty Goals': IStatItem[],
-    'Shots Total': IStatItem[],
-    'xG': IStatItem[],
-    'xAG': IStatItem[],
-    'npxG': IStatItem[],
-    'Key Passes': IStatItem[],
-    'Pass Completion %': IStatItem[],
-    'Progressive Passes': IStatItem[],
-    'Shot-Creating Actions': IStatItem[],
-    'Tackles': IStatItem[],
-    'Blocks': IStatItem[],
-    'Interceptions': IStatItem[],
-    'Clearances': IStatItem[],
-    'Touches': IStatItem[],
-    'Successful Take-Ons': IStatItem[],
-    'Progressive Carries': IStatItem[],
-    'Progressive Passes Rec': IStatItem[],
-    'Minutes': IStatItem[],
-    'Points per Match': IStatItem[],
-    'Yellow Cards': IStatItem[],
-    'Red Cards': IStatItem[],
-    'Clean Sheets': IStatItem[],
-    'Saves': IStatItem[],
+    Goals: IStatItem[];
+    Assists: IStatItem[];
+    'Goals + Assists': IStatItem[];
+    'Non-Penalty Goals': IStatItem[];
+    'Shots Total': IStatItem[];
+    'xG': IStatItem[];
+    'xAG': IStatItem[];
+    'npxG': IStatItem[];
+    'Key Passes': IStatItem[];
+    'Pass Completion %': IStatItem[];
+    'Progressive Passes': IStatItem[];
+    'Shot-Creating Actions': IStatItem[];
+    'Tackles': IStatItem[];
+    'Blocks': IStatItem[];
+    'Interceptions': IStatItem[];
+    'Clearances': IStatItem[];
+    'Touches': IStatItem[];
+    'Successful Take-Ons': IStatItem[];
+    'Progressive Carries': IStatItem[];
+    'Progressive Passes Rec': IStatItem[];
+    'Minutes': IStatItem[];
+    'Points per Match': IStatItem[];
+    'Yellow Cards': IStatItem[];
+    'Red Cards': IStatItem[];
+    'Clean Sheets': IStatItem[];
+    'Saves': IStatItem[];
     'Aerials won': IStatItem[];
+    'Fouls Committed': IStatItem[];
+    'Fouls Drawn': IStatItem[];
 }
 
 export type IStatisticsAdditional = Record<string, IStatItem[]>;
@@ -138,4 +140,6 @@ export const mainStatsKeys: Record<keyof IStatisticsMain, string> = {
     'Clean Sheets': '',
     'Saves': '',
     'Aerials won': '',
+    "Fouls Committed": '',
+    "Fouls Drawn": ''
 };

@@ -77,19 +77,17 @@ function getStatsButtons(stats: IFerbfResponse, addt: boolean) {
 
 function getStatsTemplate(stats: IFerbfResponse, key: keyof IStatistics): HTML {
     const stat = stats.mainStats[key as keyof IStatisticsMain] ?? stats.additionalStats[key];
+    const rankIcon: Record<string, string> = {
+        '1.': '🥇',
+        '2.': '🥈',
+        '3.': '🥉',
+    };
 
     let markdown: HTML = `${statisticsDict[key]}\n\n`;
+
     stat.map(({ rank, value, who }, i) => {
-        const rk = rank.length ? rank : `${i + 1}.`;
-
-        const isFirst = rk.startsWith('1.');
-        const isSecond = rk.startsWith('2.');
-        const isThird = rk.startsWith('3.');
-
-        if (isFirst) markdown += `${rk} 🥇 ${who} - ${value}\n`;
-        if (isSecond) markdown += `${rk} 🥈 ${who} - ${value}\n`;
-        if (isThird) markdown += `${rk} 🥉 ${who} - ${value}\n`;
-        if (!isFirst && !isSecond && !isThird) markdown += `${rk} ${who} - ${value}\n`;
+        const rk: string = rank.length ? rank : `${i + 1}.`;
+        return markdown += `${rk} ${rankIcon[rk] ?? ''} ${who} -${value}\n`;
     });
 
     return markdown;
