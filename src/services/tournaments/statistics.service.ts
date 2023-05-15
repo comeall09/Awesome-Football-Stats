@@ -45,9 +45,7 @@ export async function fetchStatistics(league: Tournaments, addt: boolean, statKe
 }
 
 function getStatsButtons(stats: IFerbfResponse, addt: boolean) {
-    const keys = addt
-        ? [...Object.keys(stats.mainStats), ...Object.keys(stats.additionalStats)]
-        : Object.keys(stats.mainStats);
+    const keys = Object.keys(stats.mainStats);
 
     keys.sort((a, b) => {
         const priorityA = statsPriorityOrder.indexOf(a);
@@ -72,6 +70,8 @@ function getStatsButtons(stats: IFerbfResponse, addt: boolean) {
         }
     });
 
+    if(addt) keys.push(...Object.keys(stats.additionalStats));
+
     return keys;
 }
 
@@ -83,11 +83,11 @@ function getStatsTemplate(stats: IFerbfResponse, key: keyof IStatistics): HTML {
         '3.': '🥉',
     };
 
-    let markdown: HTML = `${statisticsDict[key]}\n\n`;
+    let markdown: HTML = `${statisticsDict[key] ?? key}\n\n`;
 
     stat.map(({ rank, value, who }, i) => {
         const rk: string = rank.length ? rank : `${i + 1}.`;
-        return markdown += `${rk} ${rankIcon[rk] ?? ''} ${who} -${value}\n`;
+        return markdown += `${rankIcon[rk] ?? rk} ${who} -${value}\n`;
     });
 
     return markdown;
@@ -148,7 +148,10 @@ class StatisticsApi {
             if (key in mainStatsKeys) {
                 acc[0][key as keyof IStatisticsMain] = stats[key];
             } else {
-                acc[1][key] = stats[key];
+                const correctedKey = key
+                    .replace(/\//g, ' ') // replace '/'
+                    .replace('+', 'and');
+                acc[1][correctedKey] = stats[key];
             }
             return acc;
         }, [{}, {}] as [IStatisticsMain, IStatisticsAdditional]);
@@ -164,7 +167,7 @@ class StatisticsFirebase {
         try {
             const response = (await getDoc(statsRef)).data() as IStatisticsMain & { date?: string; };
 
-            const isExist = response && Object.keys(response).length > 1;
+            const isExist = response && Object.keys(response).length;
             const isToday = isExist && dayjs().format('YYYY-MM-DD') === response.date;
             delete response.date;
             if (isExist && isToday) return response;
@@ -187,9 +190,10 @@ class StatisticsFirebase {
         const statsRef = doc(db, league, "statistics", 'additional', 'list');
 
         try {
-            const response = (await getDoc(statsRef)).data() as IStatisticsAdditional & { date: string; } | undefined;
-            const isExist = response && response.Goals.length > 1;
-            const isToday = isExist && dayjs().format('YYYY-MM-DD') === response?.date;
+            const response = (await getDoc(statsRef)).data() as IStatisticsAdditional & { date?: string; };
+            const isExist = response && Object.keys(response).length;
+            const isToday = isExist && dayjs().format('YYYY-MM-DD') === response.date;
+            delete response.date;
             if (isExist && isToday) return response;
             throw new Error();
         } catch {

@@ -46,13 +46,20 @@ const baseDict = {
     "Goals + Assists": '📊 Г+А',
 
     xG: '🔺 Ожидаемые голы (xG)',
+    xA: '🅰️ Ожидаемые ассисты (xA)',
     xAG: '🅰️ Ожидаемые ассисты (xAG)',
+    'Non-Penalty xG': '📈 xG без учёта пенальти (npxG)',
 
     'Progressive Passes Rec': '📈 Усп. передачи с продвижением',
     'Progressive Passes': '📈 Передачи с продвижением',
 
     'Non-Penalty Goals': '⚽️ Голы (не с пенальти)',
     'Progressive Carries': '📈 Продвижение мяча',
+
+    'Shot-Creating Actions': '💢 Действия, приведшие к ударам',
+    'Goal-Creating Actions': '🔺 Действия, приведшие к голам',
+    'Goals Against': '❌ Пропущенные голы',
+    "Shots on target": "🎯 Удары в створ ворот",
 };
 
 export const standingsDict = {
@@ -63,7 +70,7 @@ export const standingsDict = {
     Draws: '🤝 Ничьи',
     Losses: '🚫 Поражения',
     'Goals For': '⚽️ Забитые голы',
-    'Goals Against': '❌ Пропущенные голы',
+    'Goals Against': baseDict['Goals Against'],
     'Goal Difference': '♻️ Разница мячей',
     Points: '✅ Очки',
     'Points/Game': '♻️ Очки/Матчи',
@@ -128,7 +135,7 @@ export const playerDict = {
     'Progressive Passes Rec': baseDict['Progressive Passes Rec'],
 
     xG: baseDict.xG,
-    "Non-Penalty xG": '📈 xG без учёта пенальти (npxG)', // Non-Penalty xG
+    "Non-Penalty xG": baseDict['Non-Penalty xG'],
     xAG: baseDict.xAG,
     "npxG + xAG": '📊 npxG + xAG',
 
@@ -159,7 +166,7 @@ export const statisticsDict: Record<string, string> = {
     'Non-Penalty Goals': baseDict['Non-Penalty Goals'],
     Minutes: baseDict.Minutes,
     Clearances: '⭕️ Выносы мяча',
-    'Shot-Creating Actions': '💢 Действия, приведшие к ударам',
+    'Shot-Creating Actions': baseDict['Shot-Creating Actions'],
     'Points per Match': '🟢 Очки за матч',
     Tackles: '⚠️ Отборы',
     Interceptions: '✅ Перехваты',
@@ -168,6 +175,55 @@ export const statisticsDict: Record<string, string> = {
 
     'Clean Sheets': '🔒 Сухие матчи',
     Saves: '🥅 Сейвы',
+
+    // additional keys
+    "Tackles Won": "❎ Успешные отборы",
+    "% of dribblers tackled": "⚡️ % of dribblers tackled",
+    "Plus Minus 90": "⚖️ Plus Minus 90",
+    "Progressive Carrying Distance": `📈 Дистанция продвижения мяча`,
+    "Goals and Assists 90": `${baseDict['Goals + Assists']}/90`,
+    "Assists 90": `${baseDict.Assists}/90`,
+    "xG Plus Minus": "⚖️ Разница xG",
+    "Shot-Creating Actions 90": `${baseDict['Shot-Creating Actions']}/90`,
+    "Goal-Creating Actions": baseDict['Goal-Creating Actions'],
+    "PSxG-GA": "⚖️ PSxG-GA",
+    "PSxG-GA 90": "⚖️ PSxG-GA 90",
+    "Penalty Kicks Made": "⚽️ Удары с пенальти",
+    "Throw-Ins taken": "🔄 Выбросы из аута",
+    "Games Played as Sub": "🔄 Матчи с замены",
+    "Save Percentage": "🥅 % сейвов",
+    "Goals Shot": "⚽️ Удары по воротам",
+    "Expected Assists": baseDict.xAG,
+    "Passes into Final Third": "🎯 Передачи в заключительную треть поля",
+    "Progressive Passing Distance": "☄️ Дистанция передач с продвижением",
+    "Corner Kicks": "☄️ Угловые",
+    "Own Goals": "⭕️ Автоголы",
+    "Crosses": "⚡️ Кроссы",
+    "xA 90": "🅰️⚽️ 90",
+    "Goals 90": `${baseDict.Goals}/90`,
+    "Shots on target %": "🎯 % Ударов в створ ворот",
+    "xG Plus Minus 90": "⚖️ разница xG/90",
+    "xG 90": `${baseDict.xG}/90`,
+    "Shots Total 90": `🎯 Всего ударов/90`,
+    "Through Balls": "☄️ Передачи в разрез",
+    "xAG 90": `${baseDict.xAG}/90`,
+    "npxG 90": `🎯 npxG ударов/90`,
+    "npxG Sh": `🎯 npxG ударов`,
+    "Crosses into Penalty Area": "⚡️ Кроссы в штрафную площадь",
+    "Carries into Penalty Area": "📈 продвижения в штрафную площадь",
+    "Passes into Penalty Area": "📈 передачи в штрафную площадь",
+    "Non-Penalty xG": baseDict['Non-Penalty xG'],
+    "Non-Penalty Goals 90": `${baseDict['Non-Penalty Goals']}/90`,
+    "Non-Penalty Goals and Assists 90": `⚽️ Голы (без пенальти) и Ассисты/90`,
+    "Non-Penalty Goals - npxG": `${baseDict['Non-Penalty Goals']} - npxG`,
+    "Successful Take-On %": "🔥 % Успешных дриблингов",
+    "Goals - xG": "⚽️ Голы - xG",
+    "Shots on target": baseDict['Shots on target'],
+    "% of Aerials Won": "🔱 % выигранных воздушных дуэлей",
+    "Goals Against 90": `${baseDict['Goals Against']}/90`,
+    "Shots on target 90": `${baseDict['Shots on target']}/90`,
+    "Goal-Creating Actions 90": `${baseDict['Goal-Creating Actions']}/90`,
+    'Clean Sheet Percentage': '🔒 % Сухих матчей',
 };
 
 export const statsPriorityOrder = [
@@ -190,9 +246,9 @@ export const statsPriorityOrder = [
     "Shot-Creating Actions",
 
     "Aerials won",
-    "Interceptions",
-    "Tackles",
     "Blocks",
+    "Tackles",
+    "Interceptions",
     "Clearances",
     'Touches',
     'Fouls Committed',

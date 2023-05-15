@@ -37,15 +37,15 @@ leagueScene.action(actions.STATS_ACTION, async (ctx) => {
     const { tournament: { league } } = ctx.session.data.find(({ userId }) => userId === ctx.callbackQuery.from.id) ?? {} as IUserSessionData;
 
     try {
-        await ctx.answerCbQuery(timeoutMsg);
         const statsButtons = await fetchStatistics(league, false);
+        await ctx.answerCbQuery();
 
         if(statsButtons.length) {
             await ctx.editMessageText(`${leagueFlag(league)} Выберите интересующий раздел:`, {
                 reply_markup: {
                     inline_keyboard: [
                         ...statsButtons.reduce((acc: InlineKeyboardButton[][], statKey, i) => {
-                            const button = { text: statisticsDict[statKey], callback_data: `${actions.STAT_KEY_ACTION}${statKey}` };
+                            const button = { text: statisticsDict[statKey] ?? statKey, callback_data: `${actions.STAT_KEY_ACTION}${statKey}` };
                             if (i && i % 2) {
                                 const lastItem = acc[acc.length - 1];
                                 lastItem.push(button);
@@ -55,13 +55,50 @@ leagueScene.action(actions.STATS_ACTION, async (ctx) => {
                         }, []),
                         [
                             { text: '🔙 Вернуться назад', callback_data: actions.REENTER_ACTION },
-                            // {text: 'Больше статистики', callback_data: 'additionalStats'},
+                            { text: '📊 Больше статистики', callback_data: actions.ADDITIONAL_STATS },
                         ]
                     ]
                 }
             });
         } else throw new Error();
     } catch (error) {
+        console.log(error);
+        // TODO: при fetch с ferbf первая попытка кидает ошибку, хотя по факту все ок
+        await ctx.reply('Что-то пошло не так, попробуйте заново');
+    }
+});
+
+leagueScene.action(actions.ADDITIONAL_STATS, async (ctx) => {
+    const { tournament: { league } } = ctx.session.data.find(({ userId }) => userId === ctx.callbackQuery.from.id) ?? {} as IUserSessionData;
+
+    try {
+        const statsButtons = await fetchStatistics(league, true);
+
+        await ctx.answerCbQuery(timeoutMsg);
+
+        if(statsButtons.length) {
+            await ctx.editMessageText(`${leagueFlag(league)} Выберите интересующий раздел:`, {
+                reply_markup: {
+                    inline_keyboard: [
+                        ...statsButtons.reduce((acc: InlineKeyboardButton[][], statKey, i) => {
+                            const button = { text: statisticsDict[statKey] ?? statKey, callback_data: `${actions.STAT_KEY_ACTION}${statKey}` };
+                            if (i && i % 2) {
+                                const lastItem = acc[acc.length - 1];
+                                lastItem.push(button);
+                                return [...acc];
+                            }
+                            return [...acc, [button]];
+                        }, []),
+                        [
+                            { text: '🔙 Вернуться назад', callback_data: actions.REENTER_ACTION },
+                            // { text: '📊 Больше статистики', callback_data: actions.ADDITIONAL_STATS },
+                        ]
+                    ]
+                }
+            });
+        } else throw new Error();
+    } catch (error) {
+        console.log(error);
         // TODO: при fetch с ferbf первая попытка кидает ошибку, хотя по факту все ок
         await ctx.reply('Что-то пошло не так, попробуйте заново');
     }
@@ -70,8 +107,11 @@ leagueScene.action(actions.STATS_ACTION, async (ctx) => {
 leagueScene.action(checkers.isStatKeyAction, async (ctx) => {
     const { tournament: { league } } = ctx.session.data.find(({ userId }) => userId === ctx.callbackQuery.from.id) ?? {} as IUserSessionData;
     const statKey: string = ctx.state.statKey;
-    const stat = await fetchStatistics(league, false, statKey);
+
+    // TODO: addt надо положить и брать из ctx.state
+    const stat = await fetchStatistics(league, true, statKey);
     await ctx.answerCbQuery();
+
     await ctx.reply(
         stat,
         {
@@ -79,8 +119,7 @@ leagueScene.action(checkers.isStatKeyAction, async (ctx) => {
             reply_markup: {
                 inline_keyboard: [
                     [
-                        {text: '🔙 В начало', callback_data: actions.REENTER_ACTION},
-                        {text: '🏆 К чемпионатам', callback_data: actions.BACK_TO_TOURNAMENTS_SCENE}
+                        {text: '🔙 Вернуться в начало', callback_data: actions.REENTER_ACTION},
                     ],
                 ]
             }

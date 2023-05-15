@@ -6,6 +6,7 @@ export const actions = {
     BACK_TO_TOURNAMENTS_SCENE: 'backTotournamentsScene',
     STANDINGS_ACTION: 'standingsAction',
     STATS_ACTION: 'statsAction',
+    ADDITIONAL_STATS: 'additionalStats',
     STAT_KEY_ACTION: 'stat@',
     REENTER_ACTION: 'reenterAction',
 };

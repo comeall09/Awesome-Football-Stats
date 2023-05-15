@@ -40,7 +40,7 @@ bot.use(stage.middleware());
 
 bot.catch((err, ctx) => {
     console.log(err, 'INDEX.TS');
-    ctx.reply("Что-то пошло не так... попробуйте позже");
+    // ctx.reply("Что-то пошло не так... попробуйте позже");
 });
 
 bot.start(async (ctx) => {
