@@ -41,7 +41,7 @@ export class TodayMatches {
                     icon: awayTeam.crest,
                     initials: awayTeam.tla,
                 },
-                dateOrTime: dayjs(utcDate).subtract(2, 'hours').format('HH:mm'),
+                dateOrTime: dayjs(utcDate).add(3, 'hours').format('HH:mm'),
                 leagueName: LeaguesDict[competition.name],
                 status,
                 scores: {
