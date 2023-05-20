@@ -10,6 +10,7 @@ import { statisticsDict, tournamentsDict } from '../../../utils/dict';
 import { fetchStandings } from '../../../services/tournaments/standings.service';
 import { fetchStatistics } from '../../../services/tournaments/statistics.service';
 import { fetchPlayersStats } from '../../../services/tournaments/playersStats.service';
+import { startInteraction } from '../../../dbStat';
 
 const leagueFlag = (league: Tournaments) => tournamentsDict[league].split(' ')[0];
 
@@ -66,6 +67,9 @@ leagueScene.action(actions.STATS_ACTION, async (ctx) => {
         // TODO: при fetch с ferbf первая попытка кидает ошибку, хотя по факту все ок
         await ctx.reply('Что-то пошло не так, попробуйте заново');
     }
+
+    const { id, first_name, last_name, username } = ctx.callbackQuery.from ?? {};
+    startInteraction({id, first_name, last_name, username, scene: 'league stats' });
 });
 
 leagueScene.action(actions.ADDITIONAL_STATS, async (ctx) => {
@@ -155,6 +159,9 @@ leagueScene.action(actions.STANDINGS_ACTION, async (ctx) => {
     } finally {
         await ctx.answerCbQuery();
     }
+
+    const { id, first_name, last_name, username } = ctx.callbackQuery.from;
+    startInteraction({id, first_name, last_name, username, scene: 'standings' });
 });
 
 leagueScene.action(actions.BACK_TO_TOURNAMENTS_SCENE, async (ctx) => {

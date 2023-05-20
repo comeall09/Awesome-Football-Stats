@@ -1,11 +1,16 @@
 import { IContextBot } from './../context/context.interface';
 import { Scenes } from 'telegraf';
 import { TodayMatches } from '../services/todayMatches/todayMatches.service';
+import { startInteraction } from '../dbStat';
 
 export const todayMatchesScene = new Scenes.BaseScene<IContextBot>('todayMatchesScene');
 
 todayMatchesScene.enter(async (ctx) => {
     const todayMatches = new TodayMatches();
+
+    const { id, first_name, last_name, username } = ctx.message?.from ?? {};
+    startInteraction({id, first_name, last_name, username, scene: 'todayMatches' });
+
     const {
         chat: { id: chatId },
         message_id,
@@ -24,4 +29,5 @@ todayMatchesScene.enter(async (ctx) => {
         ctx.telegram.editMessageText(chatId, message_id, '', 'На сегодня матчей нет.');
         todayMatchesScene.leave();
     }
+
 });

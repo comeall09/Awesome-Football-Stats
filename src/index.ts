@@ -7,6 +7,7 @@ import './firebase.config';
 import { scenesUtils, permissions, scenesKeyboard } from './utils/scenes.helpers';
 import { leagueScene, todayMatchesScene, tournamentsScene, UclScene } from './commands/index';
 import { ConfigService } from './config/config.service';
+import { startInteraction } from './dbStat';
 
 const uclScene = new UclScene();
 const stage = new Scenes.Stage<IContextBot>([
